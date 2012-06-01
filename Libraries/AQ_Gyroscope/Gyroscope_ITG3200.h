@@ -26,9 +26,9 @@
 #include <Gyroscope_ITG3200Common.h>
 
 void measureSpecificGyroADC(int *gyroADC) {
-
-  gyroADC[XAXIS] = readShortI2C()  - gyroZero[XAXIS];
-  gyroADC[YAXIS] = gyroZero[YAXIS] - readShortI2C();
+  // NOTE: X and Y are inverted, but this function is not used for #define AeroQuadMega_v2
+  gyroADC[XAXIS] = gyroZero[XAXIS] - readShortI2C();
+  gyroADC[YAXIS] = readShortI2C()  - gyroZero[YAXIS];
   gyroADC[ZAXIS] = gyroZero[ZAXIS] - readShortI2C();
 }
 
@@ -40,9 +40,9 @@ void measureSpecificGyroSum() {
 }
 
 void evaluateSpecificGyroRate(int *gyroADC) {
-
-  gyroADC[XAXIS] = (gyroSample[XAXIS] / gyroSampleCount) - gyroZero[XAXIS];
-  gyroADC[YAXIS] = gyroZero[YAXIS] - (gyroSample[YAXIS] / gyroSampleCount);
+  // NOTE: X and Y are inverted
+  gyroADC[XAXIS] = gyroZero[XAXIS] - (gyroSample[XAXIS] / gyroSampleCount);
+  gyroADC[YAXIS] = (gyroSample[YAXIS] / gyroSampleCount) - gyroZero[YAXIS];
   gyroADC[ZAXIS] = gyroZero[ZAXIS] - (gyroSample[ZAXIS] / gyroSampleCount);
 }
 

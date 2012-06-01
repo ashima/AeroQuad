@@ -371,8 +371,8 @@
 
   // heading mag hold declaration
   #ifdef HeadingMagHold
-//    #define SPARKFUN_5883L_BOB
-    #define HMC5843
+    #define SPARKFUN_5883L_BOB
+//    #define HMC5843
   #endif
 
   // Altitude declaration
@@ -1499,6 +1499,7 @@ void loop () {
       frameCounter = 0;
   }
 }
+
 
 
 
