@@ -1,0 +1,218 @@
+\documentclass{article}
+\usepackage{amsmath}
+\def\matrix#1{\overline{\bf{#1}}}
+\begin{document}
+\section{Introduction}
+	The purpose of this code is to normalize a matrix that should represent a rotation matrix for the AeroQuad. This matrix should be normalized and each vector should be orthogonal. 
+	
+\section{Original DCM code}
+The original DCM code defines a matrix $\matrix{M}$ as group of row vector $\vec{x}$,$\vec{y}$,and $\vec{z}$. The correction begins by calculating an error $\epsilon$ as
+\begin{equation}
+	\epsilon = \frac{1}{2}\vec{x} \cdot \vec{y},
+\end{equation}
+then calculates a correction to $\vec{x}$ and $\vec{y}$ as 
+\begin{eqnarray}
+	\vec{x} = \vec{x} + \epsilon\vec{y},\\
+	\vec{y} = \vec{y} + \epsilon\vec{x}.	
+\end{eqnarray}
+
+Following this correction, the $\vec{x}$ and $\vec{y}$ should be orthogonal. The $\vec{z}$ vector is then defined by the cross product
+\begin{equation}
+	\vec{z} = \vec{x} \times \vec{y}.
+\end{equation}
+Then each vector is normalized with the assumption that the vectors are close to unity, allowing a Taylor expansion to be used.
+\begin{equation}
+	\vec{v} = 0.5 * \left(3 - \vec{v}\cdot\vec{v}\right) \vec{v},
+\end{equation}
+where $\vec{v}$ is $x$,$y$ or $z$.
+
+\section{Square root normalization}
+The Taylor expansion above fails if the matrix is not close to a valid rotation matrix (if the magnitude of each component vector is not close to unity and the components are not orthogonal). This happens when the the rotation rate is large and results in the rotation matrix failing during fast turns of the AeroQuad. When this happens, the rotation matrix output from the DCM normalization is neither normalized nor a valid rotation matrix. Typically, the $\vec{x}$ and $\vec{y}$ are not orthogonal, and the resulting $\vec{z}$ is not orthogonal to the $xy$ plane, nor close to unit length. As a result, successive iterations of the normalize lead to instability as the DCM diverges \textit{unless} the rotation was transient and the AeroQuad returns to a relatively stable state (allowing the DCM Integral term to correct the error).
+	
+An easy correction to this problem is to normalize the component vectors without approximation, using the true magnitude calculation
+\begin{eqnarray}
+	\left|v\right| &=& \sqrt{\sum_i v_i^2},\\
+	\hat{v} &=& \frac{\vec{v}}{\sqrt{\sum_i v_i^2}}.
+\end{eqnarray}
+If this calculation is performed on each vector after $\vec{z}$ is calculated, the DCM is always normalized and much more stable under fast rotation.
+
+In principle, $\vec{x}$ and $\vec{y}$ should be orthogonal after the error correction stage, which means that one square--root can be saved by normalizing $\vec{x}$ and $\vec{y}$ before calculating $\vec{z}$, which is then normalized by definition
+\begin{equation}
+	\left|\vec{z}\right| = \left|\vec{x} \times \vec{y}\right| = \left|\vec{x}\right| \left|\vec{y}\right| \sin\theta,
+\end{equation}
+if $\vec{x}$ and $\vec{y}$ are orthogonal and normalized then $\sin\theta=1$, $\left|\vec{x}\right|=1$, $\left|\vec{y}\right|=1$. However,  $\vec{x}$ and $\vec{y}$ are not guaranteed to be orthogonal after the error correction, so the ``two square root'' method is not as stable as the ``three square root'' method above.
+
+\section{Alternate normalizing method}
+The desired output of the normalization (and the DCM) is a valid rotation matrix $\matrix{M}$ that represents the orientation of the AeroQuad in space, constructed from the error--prone input matrix. To construct this rotation matrix we determine the rotation required to put the $xy$ plane into the $ij$ plane (the true $xy$ plane of inertial space), and the rotation around the $\hat{k}$ vector required to rotate the $\vec{x}$ vector onto the $\hat{i}$ vector.
+
+First we calculate the vector normal to the $xy$ plane by calculating the cross product and normalizing the result.
+\begin{equation}
+	\hat{z} = \widehat{\vec{x}\times\vec{y}}.
+\end{equation}
+
+Then we calculate the angle of the $\hat{z}$ vector from $\hat{k}$ by taking the dot product (both are normalized, so the dot product \textit{is} cosine of the angle)
+\begin{eqnarray}
+	\cos\theta &=& \hat{z}\cdot\hat{k},\\
+	\sin\theta &=& \sqrt{1-\cos^2\theta}.
+\end{eqnarray}
+$\theta$ is the angle we need to rotate the $\hat{z}$ vector around the vector $\hat{z}\times\hat{k}$ so that $\hat{z}$ lines up with $\hat{k}$ axis. Given the angle of rotation and the axis $\vec{u} = (u_x,u_y,u_z)$ the rotation matrix $R$ is  
+\begin{equation}
+\begin{pmatrix}
+\begin{smallmatrix}
+	\cos\theta + u_x^2\left(1-\cos\theta\right) &  u_xu_y\left(1-\cos\theta\right) - u_z\sin\theta & u_xu_z\left(1-\cos\theta\right) + u_y\sin\theta \\
+	u_yu_x\left(1-\cos\theta\right) + u_z\sin\theta & \cos\theta + u_y^2\left(1-\cos\theta\right) & u_yu_z\left(1-\cos\theta\right) - u_x\sin\theta \\
+	u_zu_x\left(1-\cos\theta\right) - u_y\sin\theta & u_zu_y\left(1-\cos\theta\right) + u_x\sin\theta & \cos\theta + u_z^2\left(1-\cos\theta\right)
+\end{smallmatrix}
+\end{pmatrix}.
+\end{equation}
+
+For the particular rotation matrix $\matrix{R_\theta}$ of an angle $\theta$ around axis $u$ given by
+\begin{eqnarray}
+	\hat{u} &=& \hat{z}\times\hat{k},\\
+			  &=& (z_y,-z_x,0),\\
+\end{eqnarray}
+the rotation matrix becomes
+
+\begin{equation}
+\matrix{R_\theta} = \begin{pmatrix}
+\begin{smallmatrix}
+	\cos\theta + z_y^2\left(1-\cos\theta\right) &  -z_yz_x\left(1-\cos\theta\right) & -z_x\sin\theta \\
+	-z_xz_y\left(1-\cos\theta\right) & \cos\theta + z_x^2\left(1-\cos\theta\right) & - z_y\sin\theta \\
+	z_x\sin\theta & z_y\sin\theta & \cos\theta
+\end{smallmatrix}
+\end{pmatrix}.
+\end{equation}
+
+Defining $c_\theta=\cos\theta$, $d_\theta=1-\cos\theta$, and $s_\theta=\sin\theta$
+\begin{equation}
+\matrix{R_\theta} = \begin{pmatrix}
+\begin{smallmatrix}
+	c_\theta + z_y^2d_\theta &  -z_yz_xd_\theta & -z_xs_\theta \\
+	-z_xz_yd_\theta & c_\theta + z_x^2d_\theta & - z_ys_\theta \\
+	z_xs_\theta & z_ys_\theta & c_\theta
+\end{smallmatrix}
+\end{pmatrix}.
+\end{equation}
+
+Then we find the vector mean of $\vec{x}$ and $\vec{y}$, defined as $\hat{v}$,
+\begin{equation}
+	\vec{v} = \frac{1}{2}\left(\vec{x}+\vec{y}\right).
+\end{equation}
+
+This vector lies in the current $xy$ plane and bisects the angle between the $\vec{x}$ and $\vec{y}$ vectors. If the input matrix as orthogonal the vector $\vec{v}$ would be 45 degrees from both $\vec{x}$ and $\vec{y}$ vectors. We wish to distribute the deviation from 45 degrees to each axis so that we re-orthogonalize the $xy$ plane properly. We do this by rotating $\vec{v}$ to the $ij$ plane, then measuring the angle $\psi$ from the $\hat{i}$ axis. Knowing this should be 45 degrees we rotate the new vector $\vec{v'}$ by -45 degrees and then by the measured angle $\psi$. 
+ 
+First rotate $\vec{v}$ into the $xy$ plane, and normalize the resulting vector so that we can get rotation angles.
+\begin{equation}
+	\hat{v'} = \widehat{R_\theta\vec{v}} = \widehat{R_\theta\cdot\left(\vec{x}+\vec{y}\right)}.
+\end{equation}
+$\hat{v'}$ is now a unit vector with the orientation of the vector mean of $\vec{x}$ and $\vec{y}$ projected into the $ij$ plane. This vector is the orientation vector that in an orthogonal system would be rotated 45 degrees from the $\hat{i}$ axis. In the imperfect input DCM this angle is not 45 degrees, but an arbitrary angle $\psi$. We calculate the cosine and sine of this angle to create the rotation matrix that will rotate this vector onto the $\hat{i}$ axis. $\hat{v'}$ and $\hat{i}$ are again normalized, meaning their dot product is simply the cosine of the angle separating them,
+\begin{eqnarray}
+	\cos\psi = \hat{v'}\cdot\hat{i},\\
+	\sin\psi = \hat{v'}\cdot\hat{j},
+\end{eqnarray}
+where $\sin\psi$ can be calculated knowing that $\hat{v'}$ lies in the $ij$ plane. These operations are straightforward and the dot product is not actually needed
+\begin{eqnarray}
+	\cos\psi = v'_x,\\
+	\sin\psi = v'_y.
+\end{eqnarray}
+
+The rotation matrix $\matrix{R_\psi}$ can be constructed as $\matrix{R_\theta}$ was, with the rotation axis $\hat{u} = \hat{k}$
+\begin{equation}
+\matrix{R_\psi} = \begin{pmatrix}
+\begin{smallmatrix}
+	\cos\psi &  -\sin\psi & 0 \\
+	\sin\psi & \cos\psi & 0 \\
+	0 & 0 & 1
+\end{smallmatrix}
+\end{pmatrix}.
+\end{equation}
+We (could) apply this rotation to $\hat{v'}$, but that is unnecessary at this stage. The final rotation is the -45 degree rotation to move the (idealized 45 degree) $\vec{v'}$ back to the $\hat{i}$ axis. With $\phi=-45^\circ$,
+\begin{equation}
+\matrix{R_\phi} = \begin{pmatrix}
+\begin{smallmatrix}
+	\cos\phi &  -\sin\phi & 0 \\
+	\sin\phi & \cos\phi & 0 \\
+	0 & 0 & 1
+\end{smallmatrix}
+\end{pmatrix}.
+\end{equation}
+
+The final rotation matrix that gives the orientation of the vehicle is then the product of these three rotation matrices in reverse order
+\begin{equation}
+	\matrix{M} = \matrix{R_\theta}^T\matrix{R_\psi}\,\matrix{R_\phi}
+\end{equation}
+Expanding these matrices
+\begin{eqnarray}
+	\matrix{M} &=& 
+	\begin{pmatrix}
+		\begin{smallmatrix}
+			c_\theta + z_y^2d_\theta &  -z_yz_xd_\theta & -z_xs_\theta \\
+			-z_xz_yd_\theta & c_\theta + z_x^2d_\theta & - z_ys_\theta \\
+			z_xs_\theta & z_ys_\theta & c_\theta
+		\end{smallmatrix}
+	\end{pmatrix}^T
+	\begin{pmatrix}
+	\begin{smallmatrix}
+		c_\psi &  -s_\psi & 0 \\
+		s_\psi & c_\psi & 0 \\
+		0 & 0 & 1
+	\end{smallmatrix}
+	\end{pmatrix}
+	\begin{pmatrix}
+	\begin{smallmatrix}
+		c_\phi &  -s_\phi & 0 \\
+		s_\phi & c_\phi & 0 \\
+		0 & 0 & 1
+	\end{smallmatrix}
+	\end{pmatrix}\\
+	&=& 
+	\begin{pmatrix}
+		\begin{smallmatrix}
+			c_\theta + z_y^2d_\theta &  -z_yz_xd_\theta & -z_xs_\theta \\
+			-z_xz_yd_\theta & c_\theta + z_x^2d_\theta & - z_ys_\theta \\
+			z_xs_\theta & z_ys_\theta & c_\theta
+		\end{smallmatrix}
+	\end{pmatrix}^T
+	\begin{pmatrix}
+	\begin{smallmatrix}
+		c_\psi\,c_\phi-s_\psi\,s_\phi &  -s_\psi\,c_\phi -c_\psi\,s_\phi & 0 \\
+		+s_\psi\,c_\phi +c_\psi\,s_\phi & c_\psi\,c_\phi-s_\psi\,s_\phi & 0 \\
+		0 & 0 & 1
+	\end{smallmatrix}
+	\end{pmatrix}	
+\end{eqnarray}
+Given $\cos\phi = -\sin\phi = \frac{1}{\sqrt{2}}$
+\begin{eqnarray}
+	\matrix{M} &=& 
+	\begin{pmatrix}
+		\begin{smallmatrix}
+			c_\theta + z_y^2d_\theta &  -z_yz_xd_\theta & -z_xs_\theta \\
+			-z_xz_yd_\theta & c_\theta + z_x^2d_\theta & - z_ys_\theta \\
+			z_xs_\theta & z_ys_\theta & c_\theta
+		\end{smallmatrix}
+	\end{pmatrix}^T
+	\begin{pmatrix}
+	\begin{smallmatrix}
+		c_\psi\,\frac{1}{\sqrt{2}}+s_\psi\,\frac{1}{\sqrt{2}} &  -s_\psi\,\frac{1}{\sqrt{2}} +c_\psi\,\frac{1}{\sqrt{2}} & 0 \\
+		+s_\psi\,\frac{1}{\sqrt{2}} -c_\psi\,\frac{1}{\sqrt{2}} & c_\psi\,\frac{1}{\sqrt{2}}+s_\psi\,\frac{1}{\sqrt{2}} & 0 \\
+		0 & 0 & 1
+	\end{smallmatrix}
+	\end{pmatrix}\\
+	&=& 
+	\frac{1}{\sqrt{2}}\begin{pmatrix}
+		\begin{smallmatrix}
+			c_\theta + z_y^2d_\theta &  -z_yz_xd_\theta & -z_xs_\theta \\
+			-z_xz_yd_\theta & c_\theta + z_x^2d_\theta & - z_ys_\theta \\
+			z_xs_\theta & z_ys_\theta & c_\theta
+		\end{smallmatrix}
+	\end{pmatrix}^T
+	\begin{pmatrix}
+	\begin{smallmatrix}
+		c_\psi+s_\psi &  -s_\psi +c_\psi & 0 \\
+		+s_\psi -c_\psi & c_\psi+s_\psi & 0 \\
+		0 & 0 & \sqrt{2}
+	\end{smallmatrix}
+	\end{pmatrix}
+\end{eqnarray}
+
+\end{document}
