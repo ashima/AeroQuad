@@ -25,7 +25,9 @@
    If you need additional assitance go to http://www.aeroquad.com/forum.php
    or talk to us live on IRC #aeroquad
 *****************************************************************************/
-
+/*DEBUG MODE*/
+#define ASHIMA_DEBUG 1
+#include "MultiTimer_interface.h"
 #include "UserConfiguration.h" // Edit this file first before uploading to the AeroQuad
 
 //
@@ -1319,6 +1321,7 @@ void setup() {
   previousTime = micros();
   digitalWrite(LED_Green, HIGH);
   safetyCheck = 0;
+  DDRA=0xFF; //*Set port A to output mode*/
 }
 
 /*******************************************************************
@@ -1352,7 +1355,7 @@ void loop () {
   // 100hz task loop
   // ================================================================
   if (deltaTime >= 10000) {
-    
+  cbi(PORTA,PA0); sbi(PORTA,PA0); /*Flip a bit on each 100hz step */
     frameCounter++;
     
     G_Dt = (currentTime - hundredHZpreviousTime) / 1000000.0;
@@ -1408,6 +1411,7 @@ void loop () {
     // 50hz task loop
     // ================================================================
     if (frameCounter % TASK_50HZ == 0) {  //  50 Hz tasks
+ 	  cbi(PORTA,PA1);  sbi(PORTA,PA1); /*flip on 50Hz*/
 
       G_Dt = (currentTime - fiftyHZpreviousTime) / 1000000.0;
       fiftyHZpreviousTime = currentTime;
@@ -1439,6 +1443,7 @@ void loop () {
     // 10hz task loop
     // ================================================================
     if (frameCounter % TASK_10HZ == 0) {  //   10 Hz tasks
+	  sbi(PORTA,PA3);  cbi(PORTA,PA3);   /* flip on 10Hz */
 
       #if defined(HeadingMagHold)
         G_Dt = (currentTime - tenHZpreviousTime) / 1000000.0;
