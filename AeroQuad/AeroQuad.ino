@@ -436,8 +436,12 @@
    * Measure critical sensors
    */
   void measureCriticalSensors() {
+  	//prevent the measurement from occurring 0.5 milliseconds before a 100Hz start
+  	//measurements take ~0.6 milliseconds
+  if (deltaTime <= 9500) { 
     measureGyroSum();
     measureAccelSum();
+    }
   }
 #endif
 
