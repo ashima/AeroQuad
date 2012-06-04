@@ -62,6 +62,10 @@ void readSerialCommand() {
   if (SERIAL_AVAILABLE()) {
     queryType = SERIAL_READ();
     switch (queryType) {
+    case '^':
+      baroAltitudeToHoldTarget = readFloatSerial();
+      break;
+      
     case 'A': // Receive roll and pitch rate mode PID
       readSerialPID(XAXIS);
       readSerialPID(RATE_YAXIS_PID_IDX);
@@ -341,6 +345,12 @@ void PrintPID(unsigned char IDPid)
 void sendSerialTelemetry() {
   switch (queryType) {
   case '=': // Reserved debug command to view any variable from Serial Monitor
+    PrintValueComma((float)batteryData[0].voltage/100.0);
+
+    PrintValueComma(batteryGetCellCount(0));
+    PrintValueComma(batteryIsWarning(0));
+    PrintValueComma(batteryIsAlarm(0));
+    SERIAL_PRINTLN();
     break;
     
   case 'a': // Send roll and pitch rate mode PID values
@@ -554,7 +564,26 @@ void sendSerialTelemetry() {
       SERIAL_PRINTLN(gyroHeading);
     #endif
     break;
-    
+  
+  case '{':
+  {
+    static int iterations = 0;
+    PrintValueComma(currentTime);
+    PrintValueComma(iterations++);
+    SERIAL_PRINTLN();
+    break;
+   } 
+  case '?':
+  {
+    static int iterations = 0;
+    PrintValueComma(currentTime);
+    PrintValueComma(iterations++);
+    PrintValueComma(baroAltitudeToHoldTarget);
+    PrintValueComma(PID[BARO_ALTITUDE_HOLD_PID_IDX].integratedError);
+    PrintValueComma(throttle);
+    PrintValueComma(setHeading);
+    }
+    // fall through
   case 's': // Send all flight data
     PrintValueComma(motorArmed);
     PrintValueComma(kinematicsAngle[XAXIS]);
@@ -578,15 +607,17 @@ void sendSerialTelemetry() {
     for (byte channel = XAXIS; channel < LASTCHANNEL; channel++) {
       PrintValueComma(receiverCommand[channel]);
     }
-    for (byte channel = 0; channel < (8 - LASTCHANNEL); channel++) {// max of 8 transmitter channel supported
-      PrintValueComma(0); // zero out unused transmitter channels
-    }
+    if (queryType == 's')
+      for (byte channel = 0; channel < (8 - LASTCHANNEL); channel++) {// max of 8 transmitter channel supported
+        PrintValueComma(0); // zero out unused transmitter channels
+      }
     for (byte motor = 0; motor < LASTMOTOR; motor++) {
       PrintValueComma(motorCommand[motor]);
     }
-    for (byte motor = 0; motor < (8 - (LASTMOTOR)); motor++) {// max of 8 motor outputs supported
-      PrintValueComma(0); // zero out unused motor channels
-    }
+    if (queryType == 's')
+      for (byte motor = 0; motor < (8 - (LASTMOTOR)); motor++) {// max of 8 motor outputs supported
+        PrintValueComma(0); // zero out unused motor channels
+      }
     #ifdef BattMonitor
       PrintValueComma((float)batteryData[0].voltage/100.0); // voltage internally stored at 10mV:s
     #else

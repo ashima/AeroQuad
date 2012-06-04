@@ -34,7 +34,7 @@
 #define SOFTWARE_VERSION 3.1
 
 #if defined WirelessTelemetry
-  #define BAUD 111111 // use this to be compatible with USB and XBee connections
+  #define BAUD 57600 // use this to be compatible with USB and XBee connections
 #else
   #define BAUD 115200
 #endif  
