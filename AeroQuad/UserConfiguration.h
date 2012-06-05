@@ -46,10 +46,10 @@
  *********************** Define Flight Configuration ************************
  ****************************************************************************/
 // Use only one of the following definitions
-//#define quadXConfig
+#define quadXConfig
 //#define quadPlusConfig
 //#define hexPlusConfig
-#define hexXConfig      // EXPERIMENTAL: not completely re-tested
+//#define hexXConfig      // EXPERIMENTAL: not completely re-tested
 //#define triConfig
 //#define quadY4Config
 //#define hexY6Config
@@ -66,7 +66,7 @@
 // Also check the http://www.aeroquad.com/showwiki.php "Build Instructions" for more detail on the 3.0 motor changes 
 // the OLD_MOTOR_NUMBERING is compatible  with the 2.x versions of the AeroQuad code and will not need re-ordering to work
 // +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-//#define OLD_MOTOR_NUMBERING // Uncomment this for old motor numbering setup, FOR QUAD +/X MODE ONLY
+#define OLD_MOTOR_NUMBERING // Uncomment this for old motor numbering setup, FOR QUAD +/X MODE ONLY
 
 //
 // *******************************************************************************************************************************
@@ -78,34 +78,34 @@
 #define AltitudeHoldRangeFinder // Enable altitude hold with range finder, Not displayed on the configurator
 //#define AutoLanding // Enable auto landing on channel AUX3 of the remote, NEED AltitudeHoldBaro AND AltitudeHoldRangeFinder
 
-#define UseGPS // Try to auto-detect the GPS, may have some detection trouble making the connection to the configurator not working
+//#define UseGPS // Try to auto-detect the GPS, may have some detection trouble making the connection to the configurator not working
 //#define UseGPS_NMEA   // force the use of NMEA GPS
 //#define UseGPS_MTK  // force the use of MTK GPS
-#define UseGPSNavigator // EXPERIMENTAL NEED UseGPS TO BE DEFINED, enable GPS position hold, auto return home when no mission or execute mission
+//#define UseGPSNavigator // EXPERIMENTAL NEED UseGPS TO BE DEFINED, enable GPS position hold, auto return home when no mission or execute mission
 
 //
 // *******************************************************************************************************************************
 // Battery Monitor Options
 // For more information on how to setup Battery Monitor please refer to http://aeroquad.com/showwiki.php?title=BatteryMonitor+h
 // *******************************************************************************************************************************
-#define BattMonitor            // Enable Battery monitor
+//#define BattMonitor            // Enable Battery monitor
 //#define BattMonitorAutoDescent // NEED BattMonitor defined. if you want the craft to auto descent when the battery reach the alarm voltage
 //#define POWERED_BY_VIN         // NEED BattMonitor defined. Uncomment this if your v2.x is powered directly by the vin/gnd of the arduino
 //
 // Advanced configuration. Please refer to wiki for instructions
-#define BattCustomConfig DEFINE_BATTERY( 3,0,15,0,2,50,0)
+//#define BattCustomConfig DEFINE_BATTERY( 3,0,15,0,2,50,0)
 
 //
 // *******************************************************************************************************************************
 // Optional Receiver
 // *******************************************************************************************************************************
-#define NormalReceiver // this do nothing really but, it indicate users that they don't have to define other option here if they have a normal receiver
+//#define NormalReceiver // this do nothing really but, it indicate users that they don't have to define other option here if they have a normal receiver
 //#define RemotePCReceiver // EXPERIMENTAL Use PC as transmitter via serial communicator with XBEE
 //#define ReceiverSBUS  // Use a Futaba sBUS RX, connect sBUS data line to Serial2 RX, supports up to 8 channels
 //#define ReceiverPPM // Use a ppm receiver
 //#define ReceiverHWPPM // Use a ppm receiver with HW timer, needs a HW modification (see Libraries/AQ_Receiver/Receiver_HWPPM.h)
 // You need to select one of these channel order definitions for PPM receiver
-//#define SKETCH_SERIAL_SUM_PPM SERIAL_SUM_PPM_1 //For Graupner/Spektrum (DEFAULT)
+#define SKETCH_SERIAL_SUM_PPM SERIAL_SUM_PPM_1 //For Graupner/Spektrum (DEFAULT)
 //#define SKETCH_SERIAL_SUM_PPM SERIAL_SUM_PPM_2 //For Robe/Hitec/Futaba
 //#define SKETCH_SERIAL_SUM_PPM SERIAL_SUM_PPM_3 //For some Hitec/Sanwa/Others
 
@@ -170,3 +170,4 @@
  ****************************************************************************
  ****************************************************************************
  ****************************************************************************/
+
