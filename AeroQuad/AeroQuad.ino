@@ -1419,7 +1419,7 @@ void loop () {
 //cl//    // ================================================================
 //cl//    if (frameCounter % TASK_50HZ == 0) {  //  50 Hz tasks
 //cl//// 	  cbi(PORTA,PA1);  sbi(PORTA,PA1); /*flip on 50Hz*/
-
+//cl//
 //cl//      G_Dt = (currentTime - fiftyHZpreviousTime) / 1000000.0;
 //cl//      fiftyHZpreviousTime = currentTime;
 //cl//
@@ -1430,9 +1430,9 @@ void loop () {
 //cl//        readRSSI();
 //cl//      #endif
 //cl//
-      #ifdef AltitudeHoldRangeFinder
-        updateRangeFinders();
-      #endif
+//cl//      #ifdef AltitudeHoldRangeFinder
+//cl//        updateRangeFinders();
+//cl//      #endif
 //cl//
 //cl//      #if defined (UseGPS)
 //cl//        readGps();
@@ -1451,23 +1451,23 @@ void loop () {
 //cl//    // ================================================================
 //cl//    if (frameCounter % TASK_10HZ == 0) {  //   10 Hz tasks
 //cl////	  sbi(PORTA,PA3);  cbi(PORTA,PA3);   /* flip on 10Hz */
-//cl//
-//cl//      #if defined(HeadingMagHold)
-//cl//        G_Dt = (currentTime - tenHZpreviousTime) / 1000000.0;
-//cl//        tenHZpreviousTime = currentTime;
-//cl//         
-//cl//        measureMagnetometer(kinematicsAngle[XAXIS], kinematicsAngle[YAXIS]);
-//cl//        calculateHeading(gyroRate[XAXIS],
-//cl//                         gyroRate[YAXIS],
-//cl//                         gyroRate[ZAXIS],
-//cl//                         filteredAccel[XAXIS],
-//cl//                         filteredAccel[YAXIS],
-//cl//                         filteredAccel[ZAXIS],
-//cl//                         accelOneG,
-//cl//                         getHdgXY(XAXIS),
-//cl//                         getHdgXY(YAXIS),
-//cl//                         G_Dt);
-//cl//      #endif
+
+      #if defined(HeadingMagHold)
+        G_Dt = (currentTime - tenHZpreviousTime) / 1000000.0;
+        tenHZpreviousTime = currentTime;
+         
+        measureMagnetometer(kinematicsAngle[XAXIS], kinematicsAngle[YAXIS]);
+        calculateHeading(gyroRate[XAXIS],
+                         gyroRate[YAXIS],
+                         gyroRate[ZAXIS],
+                         filteredAccel[XAXIS],
+                         filteredAccel[YAXIS],
+                         filteredAccel[ZAXIS],
+                         accelOneG,
+                         getHdgXY(XAXIS),
+                         getHdgXY(YAXIS),
+                         G_Dt);
+      #endif
 //cl//    }
 //cl//    else if ((currentTime - lowPriorityTenHZpreviousTime) > 100000) {
 //cl//
