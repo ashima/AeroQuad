@@ -1023,7 +1023,7 @@
 #if defined (AeroQuadMega_CHR6DM) || defined (APM_OP_CHR6DM)
   // CHR6DM have it's own kinematics, so, initialize in it's scope
 #else
-  #include "Kinematics_ARG.h"
+  #include "Kinematics_DCM.h"
 #endif
 
 //********************************************************
@@ -1445,16 +1445,16 @@ void loop () {
         tenHZpreviousTime = currentTime;
          
         measureMagnetometer(kinematicsAngle[XAXIS], kinematicsAngle[YAXIS]);
-        calculateHeading(gyroRate[XAXIS],
-                         gyroRate[YAXIS],
-                         gyroRate[ZAXIS],
-                         filteredAccel[XAXIS],
-                         filteredAccel[YAXIS],
-                         filteredAccel[ZAXIS],
-                         accelOneG,
-                         getHdgXY(XAXIS),
-                         getHdgXY(YAXIS),
-                         G_Dt);
+//        calculateHeading(gyroRate[XAXIS],
+//                         gyroRate[YAXIS],
+//                         gyroRate[ZAXIS],
+//                         filteredAccel[XAXIS],
+//                         filteredAccel[YAXIS],
+//                         filteredAccel[ZAXIS],
+//                         accelOneG,
+//                         getHdgXY(XAXIS),
+//                         getHdgXY(YAXIS),
+//                         G_Dt);
       #endif
     }
     else if ((currentTime - lowPriorityTenHZpreviousTime) > 100000) {
