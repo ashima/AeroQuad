@@ -1471,12 +1471,12 @@ void loop () {
 //cl//    }
 //cl//    else if ((currentTime - lowPriorityTenHZpreviousTime) > 100000) {
 
-      G_Dt = (currentTime - lowPriorityTenHZpreviousTime) / 1000000.0;
-      lowPriorityTenHZpreviousTime = currentTime;
+//cl//      G_Dt = (currentTime - lowPriorityTenHZpreviousTime) / 1000000.0;
+//cl//      lowPriorityTenHZpreviousTime = currentTime;
       
-      #if defined(BattMonitor)
-        measureBatteryVoltage(G_Dt*1000.0);
-      #endif
+//cl//      #if defined(BattMonitor)
+//cl//        measureBatteryVoltage(G_Dt*1000.0);
+//cl//      #endif
 
       // Listen for configuration commands and reports telemetry
       readSerialCommand(); // defined in SerialCom.pde
