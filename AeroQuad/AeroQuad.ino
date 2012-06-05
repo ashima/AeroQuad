@@ -440,7 +440,7 @@
   	//measurements take ~0.6 milliseconds
 //cl//  if (deltaTime <= 9500) { 
     measureGyroSum();
-    measureAccelSum();
+//cl//    measureAccelSum();
 //cl//    }
   }
 #endif
