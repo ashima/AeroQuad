@@ -1401,7 +1401,7 @@ void loop () {
 //cl//    #endif
 //cl//          
 //cl//    // Combines external pilot commands and measured sensor data to generate motor commands
-    processFlightControl();
+//cl//    processFlightControl();
 //cl//    
 //cl//    #ifdef BinaryWrite
 //cl//      if (fastTransfer == ON) {
@@ -1410,9 +1410,9 @@ void loop () {
 //cl//      }
 //cl//    #endif
 //cl//
-//cl//    #ifdef SlowTelemetry
-//cl//      updateSlowTelemetry100Hz();
-//cl//    #endif
+    #ifdef SlowTelemetry
+      updateSlowTelemetry100Hz();
+    #endif
 //cl//
 //cl//    // ================================================================
 //cl//    // 50hz task loop
