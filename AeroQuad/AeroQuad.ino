@@ -1383,22 +1383,22 @@ void loop () {
 //cl//      
 //cl//      
 //cl//    /* calculate kinematics*/
-    calculateKinematics(gyroRate[XAXIS],
-                        gyroRate[YAXIS],
-                        gyroRate[ZAXIS],
-                        filteredAccel[XAXIS],
-                        filteredAccel[YAXIS],
-                        filteredAccel[ZAXIS],
-                        G_Dt);
+//cl//    calculateKinematics(gyroRate[XAXIS],
+//cl//                        gyroRate[YAXIS],
+//cl//                        gyroRate[ZAXIS],
+//cl//                        filteredAccel[XAXIS],
+//cl//                        filteredAccel[YAXIS],
+//cl//                        filteredAccel[ZAXIS],
+//cl//                        G_Dt);
 //cl//
 //cl//
 //cl//    // Evaluate are here because we want it to be synchronized with the processFlightControl
-//cl//    #if defined AltitudeHoldBaro
-//cl//      measureBaroSum(); 
-//cl//      if (frameCounter % THROTTLE_ADJUST_TASK_SPEED == 0) {  //  50 Hz tasks
-//cl//        evaluateBaroAltitude();
-//cl//      }
-//cl//    #endif
+    #if defined AltitudeHoldBaro
+      measureBaroSum(); 
+      if (frameCounter % THROTTLE_ADJUST_TASK_SPEED == 0) {  //  50 Hz tasks
+        evaluateBaroAltitude();
+      }
+    #endif
 //cl//          
 //cl//    // Combines external pilot commands and measured sensor data to generate motor commands
 //cl//    processFlightControl();
