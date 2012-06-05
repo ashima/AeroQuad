@@ -1361,7 +1361,7 @@ void loop () {
 
 
 //cl//  if (deltaTime >= 10000) {
-    frameCounter++;
+//cl//    frameCounter++;
 //cl//    cbi(PORTA,PA0); sbi(PORTA,PA0); /*Flip a bit on each 100hz step */
 //cl//  
 //cl//
@@ -1371,9 +1371,9 @@ void loop () {
 //cl//    evaluateGyroRate();
 //cl//    evaluateMetersPerSec();
 //cl//
-//cl//    for (int axis = XAXIS; axis <= ZAXIS; axis++) {
-//cl//      filteredAccel[axis] = computeFourthOrder(meterPerSecSec[axis], &fourthOrder[axis]);
-//cl//    }
+    for (int axis = XAXIS; axis <= ZAXIS; axis++) {
+      filteredAccel[axis] = computeFourthOrder(meterPerSecSec[axis], &fourthOrder[axis]);
+    }
 //cl//      
 //cl////    #if defined (AltitudeHoldBaro) || defined (AltitudeHoldRangeFinder)
 //       float estimatedXVelocity = (smootedAccel[XAXIS] * (1 - invSqrt(isq(smootedAccel[XAXIS]) + isq(smootedAccel[YAXIS]) + isq(smootedAccel[ZAXIS]))));
