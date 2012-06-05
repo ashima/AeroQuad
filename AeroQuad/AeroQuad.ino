@@ -1082,7 +1082,7 @@
   #include <HeadingFusionProcessor.h>
 #elif defined (SPARKFUN_9DOF_5883L) || defined (SPARKFUN_5883L_BOB) || defined (AutonavShield_5883L)
   #include <Magnetometer_HMC5883L.h>
-  #include <HeadingFusionProcessor.h>
+//  #include <HeadingFusionProcessor.h>
 #elif defined (COMPASS_CHR6DM)
 #endif
 
@@ -1252,7 +1252,7 @@ void setup() {
     vehicleState |= HEADINGHOLD_ENABLED;
     initializeMagnetometer();
     initializeKinematics(getHdgXY(XAXIS), getHdgXY(YAXIS));
-    initializeHeadingFusion(getHdgXY(XAXIS), getHdgXY(YAXIS));
+//    initializeHeadingFusion(getHdgXY(XAXIS), getHdgXY(YAXIS));
   #else
     initializeKinematics(1.0, 0.0);  // with no compass, DCM matrix initalizes to a heading of 0 degrees
   #endif
@@ -1379,6 +1379,9 @@ void loop () {
                         filteredAccel[XAXIS],
                         filteredAccel[YAXIS],
                         filteredAccel[ZAXIS],
+                         accelOneG,
+                         getHdgXY(XAXIS),
+                         getHdgXY(YAXIS),
                         G_Dt);
 
 
