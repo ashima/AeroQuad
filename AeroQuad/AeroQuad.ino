@@ -1452,35 +1452,35 @@ void loop () {
 //cl//    if (frameCounter % TASK_10HZ == 0) {  //   10 Hz tasks
 //cl////	  sbi(PORTA,PA3);  cbi(PORTA,PA3);   /* flip on 10Hz */
 
-      #if defined(HeadingMagHold)
+//cl//      #if defined(HeadingMagHold)
 //cl//        G_Dt = (currentTime - tenHZpreviousTime) / 1000000.0;
 //cl//        tenHZpreviousTime = currentTime;
          
 //cl//        measureMagnetometer(kinematicsAngle[XAXIS], kinematicsAngle[YAXIS]);
-        calculateHeading(gyroRate[XAXIS],
-                         gyroRate[YAXIS],
-                         gyroRate[ZAXIS],
-                         filteredAccel[XAXIS],
-                         filteredAccel[YAXIS],
-                         filteredAccel[ZAXIS],
-                         accelOneG,
-                         getHdgXY(XAXIS),
-                         getHdgXY(YAXIS),
-                         G_Dt);
-      #endif
+//cl//        calculateHeading(gyroRate[XAXIS],
+//cl//                         gyroRate[YAXIS],
+//cl//                         gyroRate[ZAXIS],
+//cl//                         filteredAccel[XAXIS],
+//cl//                         filteredAccel[YAXIS],
+//cl//                         filteredAccel[ZAXIS],
+//cl//                         accelOneG,
+//cl//                         getHdgXY(XAXIS),
+//cl//                         getHdgXY(YAXIS),
+//cl//                         G_Dt);
+//cl//      #endif
 //cl//    }
 //cl//    else if ((currentTime - lowPriorityTenHZpreviousTime) > 100000) {
-//cl//
-//cl//      G_Dt = (currentTime - lowPriorityTenHZpreviousTime) / 1000000.0;
-//cl//      lowPriorityTenHZpreviousTime = currentTime;
-//cl//      
-//cl//      #if defined(BattMonitor)
-//cl//        measureBatteryVoltage(G_Dt*1000.0);
-//cl//      #endif
-//cl//
-//cl//      // Listen for configuration commands and reports telemetry
-//cl//      readSerialCommand(); // defined in SerialCom.pde
-//cl//      sendSerialTelemetry(); // defined in SerialCom.pde
+
+      G_Dt = (currentTime - lowPriorityTenHZpreviousTime) / 1000000.0;
+      lowPriorityTenHZpreviousTime = currentTime;
+      
+      #if defined(BattMonitor)
+        measureBatteryVoltage(G_Dt*1000.0);
+      #endif
+
+      // Listen for configuration commands and reports telemetry
+      readSerialCommand(); // defined in SerialCom.pde
+      sendSerialTelemetry(); // defined in SerialCom.pde
 //cl//    }
 //cl//    else if ((currentTime - lowPriorityTenHZpreviousTime2) > 100000) {
 //cl//      
