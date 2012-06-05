@@ -1479,32 +1479,32 @@ void loop () {
 //cl//      #endif
 
       // Listen for configuration commands and reports telemetry
-      readSerialCommand(); // defined in SerialCom.pde
-      sendSerialTelemetry(); // defined in SerialCom.pde
+//cl//      readSerialCommand(); // defined in SerialCom.pde
+//cl//      sendSerialTelemetry(); // defined in SerialCom.pde
 //cl//    }
 //cl//    else if ((currentTime - lowPriorityTenHZpreviousTime2) > 100000) {
-//cl//      
-//cl//      G_Dt = (currentTime - lowPriorityTenHZpreviousTime2) / 1000000.0;
-//cl//      lowPriorityTenHZpreviousTime2 = currentTime;
-//cl//
-//cl//      #ifdef OSD_SYSTEM_MENU
-//cl//        updateOSDMenu();
-//cl//      #endif
-//cl//
-//cl//      #ifdef MAX7456_OSD
-//cl//        updateOSD();
-//cl//      #endif
-//cl//      
-//cl//      #if defined (UseGPS) || defined (BattMonitor)
-//cl//        processLedStatus();
-//cl//      #endif
-//cl//      
-//cl//      #ifdef SlowTelemetry
-//cl//        updateSlowTelemetry10Hz();
-//cl//      #endif
+      
+      G_Dt = (currentTime - lowPriorityTenHZpreviousTime2) / 1000000.0;
+      lowPriorityTenHZpreviousTime2 = currentTime;
+
+      #ifdef OSD_SYSTEM_MENU
+        updateOSDMenu();
+      #endif
+
+      #ifdef MAX7456_OSD
+        updateOSD();
+      #endif
+      
+      #if defined (UseGPS) || defined (BattMonitor)
+        processLedStatus();
+      #endif
+      
+      #ifdef SlowTelemetry
+        updateSlowTelemetry10Hz();
+      #endif
 //cl//    }
-//cl//  
-//cl//    previousTime = currentTime;
+  
+    previousTime = currentTime;
 //cl//  }
   
 //cl//  if (frameCounter >= 100) {
