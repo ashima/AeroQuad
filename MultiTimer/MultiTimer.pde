@@ -107,6 +107,10 @@ float _last_n3_long = 0;
 float _last_n4_long = 0;
 float _last_n5_long = 0;
 
+float _last_n3_std = 0;
+float _last_n4_std = 0;
+float _last_n5_std = 0;
+
 uint32_t _last_n3_delta = 0;
 uint32_t _last_n4_delta = 0;
 
@@ -213,17 +217,23 @@ void loop()
     
     USB_SERIAL.print(micros());
     USB_SERIAL.print("  ");
-    USB_SERIAL.print(n3 - _last_n3);
-    USB_SERIAL.print(" ");
-    USB_SERIAL.print(n4 - _last_n4);
-    USB_SERIAL.print(" ");
-    USB_SERIAL.print(n5 - _last_n5);
-    USB_SERIAL.print("  ");
+//    USB_SERIAL.print(n3 - _last_n3);
+//    USB_SERIAL.print(" ");
+//    USB_SERIAL.print(n4 - _last_n4);
+//    USB_SERIAL.print(" ");
+//    USB_SERIAL.print(n5 - _last_n5);
+//    USB_SERIAL.print("  ");
     USB_SERIAL.print(_last_n3_long);
     USB_SERIAL.print(" ");
     USB_SERIAL.print(_last_n4_long);
     USB_SERIAL.print(" ");
     USB_SERIAL.print(_last_n5_long);
+    USB_SERIAL.print(" ");
+    USB_SERIAL.print(_last_n3_std);
+    USB_SERIAL.print(" ");
+    USB_SERIAL.print(_last_n4_std);
+    USB_SERIAL.print(" ");
+    USB_SERIAL.print(_last_n5_std);
   
     USB_SERIAL.println();
     
@@ -231,11 +241,16 @@ void loop()
     _last_n4_long = _last_n4_long*0.5+(n4-_last_n4)*0.5;
     _last_n5_long = _last_n5_long*0.5+(n5-_last_n5)*0.5;
 
+    _last_n3_std = _last_n3_std*0.5+abs((n3-_last_n3) - _last_n3_long)*0.5;
+    _last_n4_std = _last_n4_std*0.5+abs((n4-_last_n4) - _last_n4_long)*0.5;
+    _last_n5_std = _last_n5_std*0.5+abs((n5-_last_n5) - _last_n5_long)*0.5;
+
+	
     _last_n3 = n3;
     _last_n4 = n4;
     _last_n5 = n5;
     
-    
+	
     
   }
 
