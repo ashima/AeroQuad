@@ -1,0 +1,57 @@
+digraph{
+node[shape="box"]
+"Fast as possible"->"measureCriticalSensors"
+"measureCriticalSensors"->"measureGyroSum"
+"measureCriticalSensors"->"measureAccelSum"
+
+
+"100Hz" ->  "evaluategyrorate"
+"100Hz" ->  "evaluatemeterssec"
+"100Hz" ->  "filteredAccelLoop"
+"100Hz" ->  "CalculateKinematics"
+"100Hz" ->  "BaroAltHold"
+"100Hz" ->  "evaluateBaroHold"
+"100Hz" ->  "measureBaroSum"
+"100Hz" ->  "processflightcontrol"
+"100Hz" ->  "slowTelemetry"
+
+"all50Hz" -> "50Hz"
+"all50Hz" -> "evaluateBaroHold"
+"50Hz"-> "readPilotCommand"
+"50Hz"-> "UpdateRangeFinder"
+
+"10Hz"->"MeasureMagnetometer"
+"10Hz"->"CalculateHeading"
+
+"low priority 10Hz 1"->"serial (nothing)"
+"low priority 10Hz 2"->"updateOSDmenu"
+"low priority 10Hz 2"->"updateOSD"
+
+
+"measureCriticalSensors"[label="measureCriticalSensors (0.694 ms)"]
+"measureGyroSum"[label= "measureGyroSum (0.353 ms)"]
+"measureAccelSum"[label= "measureAccelSum (0.353 ms)"]
+
+"100Hz"[label = "100Hz (3.731 ms)"]
+"evaluategyrorate"[label="evaluategyrorate (0.516 ms)"]
+"evaluatemeterssec"[label="evaluatemeterssec (0.230 ms)"]
+"filteredAccelLoop"[label="filteredAccelLoop (0.486 ms)"]
+"CalculateKinematics"[label="CalculateKinematics (0.895 ms)"]
+"BaroAltHold"[label="BaroAltHold (0.882 ms)"]
+"evaluateBaroHold"[label = "evaluateBaroHold (0.019 ms)"]
+"measureBaroSum"[label = "measureBaroSum (0.377 ms)"]
+"processflightcontrol"[label = "processflightcontrol (0.019 ms)"]
+"slowTelemetry"[label = "slowTelemetry (0.011 ms)"]
+"all50Hz"[label="everything at 50Hz (0.654 ms)"]
+"50Hz"[label="50Hz loop (0.643 ms)"]
+"readPilotCommand"[label="readPilotCommand (0.569 ms)"]
+"UpdateRangeFinder"[label="UpdateRangeFinder (no sonar) (0.075 ms)"]
+"10Hz"[label="10Hz loop (2.949 ms)"]
+"MeasureMagnetometer"[label="Measure mag (1.107 ms)"]
+"CalculateHeading"[label="CalculateHeading (1.821 ms)"]
+"low priority 10Hz 1"[label="low priority 10Hz 1 (0.028 ms)"]
+"serial (nothing)"[label="serial (do nothing) (0.018 ms)"]
+"low priority 10Hz 2"[label="low priority 10Hz 2 (0.430 ms)"]
+"updateOSDmenu"[label="updateOSDmenu (0.015 ms)"]
+"updateOSD"[label="updateOSD (0.415 ms)"]
+}
