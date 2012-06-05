@@ -1456,17 +1456,17 @@ void loop () {
 //cl//        G_Dt = (currentTime - tenHZpreviousTime) / 1000000.0;
 //cl//        tenHZpreviousTime = currentTime;
          
-        measureMagnetometer(kinematicsAngle[XAXIS], kinematicsAngle[YAXIS]);
-//cl//        calculateHeading(gyroRate[XAXIS],
-//cl//                         gyroRate[YAXIS],
-//cl//                         gyroRate[ZAXIS],
-//cl//                         filteredAccel[XAXIS],
-//cl//                         filteredAccel[YAXIS],
-//cl//                         filteredAccel[ZAXIS],
-//cl//                         accelOneG,
-//cl//                         getHdgXY(XAXIS),
-//cl//                         getHdgXY(YAXIS),
-//cl//                         G_Dt);
+//cl//        measureMagnetometer(kinematicsAngle[XAXIS], kinematicsAngle[YAXIS]);
+        calculateHeading(gyroRate[XAXIS],
+                         gyroRate[YAXIS],
+                         gyroRate[ZAXIS],
+                         filteredAccel[XAXIS],
+                         filteredAccel[YAXIS],
+                         filteredAccel[ZAXIS],
+                         accelOneG,
+                         getHdgXY(XAXIS),
+                         getHdgXY(YAXIS),
+                         G_Dt);
       #endif
 //cl//    }
 //cl//    else if ((currentTime - lowPriorityTenHZpreviousTime) > 100000) {
