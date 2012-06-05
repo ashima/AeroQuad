@@ -1396,7 +1396,7 @@ void loop () {
 //cl//    #if defined AltitudeHoldBaro
 //cl//      measureBaroSum(); 
 //cl//      if (frameCounter % THROTTLE_ADJUST_TASK_SPEED == 0) {  //  50 Hz tasks
-        evaluateBaroAltitude();
+//cl//        evaluateBaroAltitude();
 //cl//      }
 //cl//    #endif
 //cl//          
