@@ -1487,13 +1487,13 @@ void loop () {
 //cl//      G_Dt = (currentTime - lowPriorityTenHZpreviousTime2) / 1000000.0;
 //cl//      lowPriorityTenHZpreviousTime2 = currentTime;
 //cl//
-      #ifdef OSD_SYSTEM_MENU
-        updateOSDMenu();
-      #endif
-//cl//
-//cl//      #ifdef MAX7456_OSD
-//cl//        updateOSD();
+//cl//      #ifdef OSD_SYSTEM_MENU
+//cl//        updateOSDMenu();
 //cl//      #endif
+//cl//
+      #ifdef MAX7456_OSD
+        updateOSD();
+      #endif
 //cl//      
 //cl//      #if defined (UseGPS) || defined (BattMonitor)
 //cl//        processLedStatus();
