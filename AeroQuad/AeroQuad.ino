@@ -1393,15 +1393,15 @@ void loop () {
 //cl//
 //cl//
 //cl//    // Evaluate are here because we want it to be synchronized with the processFlightControl
-    #if defined AltitudeHoldBaro
+//cl//    #if defined AltitudeHoldBaro
 //cl//      measureBaroSum(); 
 //cl//      if (frameCounter % THROTTLE_ADJUST_TASK_SPEED == 0) {  //  50 Hz tasks
-        evaluateBaroAltitude();
+//cl//        evaluateBaroAltitude();
 //cl//      }
-    #endif
+//cl//    #endif
 //cl//          
 //cl//    // Combines external pilot commands and measured sensor data to generate motor commands
-//cl//    processFlightControl();
+    processFlightControl();
 //cl//    
 //cl//    #ifdef BinaryWrite
 //cl//      if (fastTransfer == ON) {
