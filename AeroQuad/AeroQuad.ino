@@ -439,8 +439,8 @@
   	//prevent the measurement from occurring 0.5 milliseconds before a 100Hz start
   	//measurements take ~0.6 milliseconds
 //cl//  if (deltaTime <= 9500) { 
-    measureGyroSum();
-//cl//    measureAccelSum();
+//cl//    measureGyroSum();
+    measureAccelSum();
 //cl//    }
   }
 #endif
