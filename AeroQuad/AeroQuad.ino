@@ -1420,30 +1420,30 @@ void loop () {
 //cl//    if (frameCounter % TASK_50HZ == 0) {  //  50 Hz tasks
 //cl//// 	  cbi(PORTA,PA1);  sbi(PORTA,PA1); /*flip on 50Hz*/
 
-      G_Dt = (currentTime - fiftyHZpreviousTime) / 1000000.0;
-      fiftyHZpreviousTime = currentTime;
-
-      // Reads external pilot commands and performs functions based on stick configuration
+//cl//      G_Dt = (currentTime - fiftyHZpreviousTime) / 1000000.0;
+//cl//      fiftyHZpreviousTime = currentTime;
+//cl//
+//cl//      // Reads external pilot commands and performs functions based on stick configuration
       readPilotCommands(); 
-      
-      #if defined (UseRSSIFaileSafe) 
-        readRSSI();
-      #endif
-
-      #ifdef AltitudeHoldRangeFinder
-        updateRangeFinders();
-      #endif
-
-      #if defined (UseGPS)
-        readGps();
-        if (haveAGpsLock() && !isHomeBaseInitialized()) {
-          initHomeBase();
-        }
-      #endif      
-      
-      #if defined(CameraControl)
-        moveCamera(kinematicsAngle[YAXIS],kinematicsAngle[XAXIS],kinematicsAngle[ZAXIS]);
-      #endif
+//cl//      
+//cl//      #if defined (UseRSSIFaileSafe) 
+//cl//        readRSSI();
+//cl//      #endif
+//cl//
+//cl//      #ifdef AltitudeHoldRangeFinder
+//cl//        updateRangeFinders();
+//cl//      #endif
+//cl//
+//cl//      #if defined (UseGPS)
+//cl//        readGps();
+//cl//        if (haveAGpsLock() && !isHomeBaseInitialized()) {
+//cl//          initHomeBase();
+//cl//        }
+//cl//      #endif      
+//cl//      
+//cl//      #if defined(CameraControl)
+//cl//        moveCamera(kinematicsAngle[YAXIS],kinematicsAngle[XAXIS],kinematicsAngle[ZAXIS]);
+//cl//      #endif
 //cl//    }
 //cl//
 //cl//    // ================================================================
