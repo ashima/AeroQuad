@@ -1424,15 +1424,15 @@ void loop () {
 //cl//      fiftyHZpreviousTime = currentTime;
 //cl//
 //cl//      // Reads external pilot commands and performs functions based on stick configuration
-      readPilotCommands(); 
+//cl//      readPilotCommands(); 
 //cl//      
 //cl//      #if defined (UseRSSIFaileSafe) 
 //cl//        readRSSI();
 //cl//      #endif
 //cl//
-//cl//      #ifdef AltitudeHoldRangeFinder
-//cl//        updateRangeFinders();
-//cl//      #endif
+      #ifdef AltitudeHoldRangeFinder
+        updateRangeFinders();
+      #endif
 //cl//
 //cl//      #if defined (UseGPS)
 //cl//        readGps();
@@ -1444,7 +1444,7 @@ void loop () {
 //cl//      #if defined(CameraControl)
 //cl//        moveCamera(kinematicsAngle[YAXIS],kinematicsAngle[XAXIS],kinematicsAngle[ZAXIS]);
 //cl//      #endif
-//cl//    }
+//cl////cl//    }
 //cl//
 //cl//    // ================================================================
 //cl//    // 10hz task loop
