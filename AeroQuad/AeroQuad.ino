@@ -1371,9 +1371,10 @@ void loop () {
 //cl//    evaluateGyroRate();
 //cl//    evaluateMetersPerSec();
 //cl//
-    for (int axis = XAXIS; axis <= ZAXIS; axis++) {
+	int axis=XAXIS;
+//cl//    for (int axis = XAXIS; axis <= ZAXIS; axis++) {
       filteredAccel[axis] = computeFourthOrder(meterPerSecSec[axis], &fourthOrder[axis]);
-    }
+//cl//    }
 //cl//      
 //cl////    #if defined (AltitudeHoldBaro) || defined (AltitudeHoldRangeFinder)
 //       float estimatedXVelocity = (smootedAccel[XAXIS] * (1 - invSqrt(isq(smootedAccel[XAXIS]) + isq(smootedAccel[YAXIS]) + isq(smootedAccel[ZAXIS]))));
