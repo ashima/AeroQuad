@@ -51,7 +51,7 @@
 #endif
 
 #if defined (ReceiverSBUS) && defined (SlowTelemetry)
-  #error Receiver SWBUS and SlowTelemetry are in conflict for Seria2, they can't be used together
+  #error Receiver SWBUS and SlowTelemetry are in conflict for Seria2, they cannot be used together
 #endif
 
 #if defined UseGPS
