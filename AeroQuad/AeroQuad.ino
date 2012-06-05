@@ -1361,7 +1361,7 @@ void loop () {
 
 
 //cl//  if (deltaTime >= 10000) {
-//cl//    frameCounter++;
+    frameCounter++;
 //cl//    cbi(PORTA,PA0); sbi(PORTA,PA0); /*Flip a bit on each 100hz step */
 //cl//  
 //cl//
@@ -1369,7 +1369,7 @@ void loop () {
 //cl//    hundredHZpreviousTime = currentTime;
 //cl//    
 //cl//    evaluateGyroRate();
-    evaluateMetersPerSec();
+//cl//    evaluateMetersPerSec();
 //cl//
 //cl//    for (int axis = XAXIS; axis <= ZAXIS; axis++) {
 //cl//      filteredAccel[axis] = computeFourthOrder(meterPerSecSec[axis], &fourthOrder[axis]);
