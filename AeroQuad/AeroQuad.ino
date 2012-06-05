@@ -1353,7 +1353,7 @@ void loop () {
 //cl//  currentTime = micros();
 //cl//  deltaTime = currentTime - previousTime;
 
-//cl//  measureCriticalSensors();
+  measureCriticalSensors();
 
   // ================================================================
   // 100hz task loop
