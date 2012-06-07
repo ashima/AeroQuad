@@ -93,8 +93,8 @@ void setup()
   USB_SERIAL.begin(USB_BAUD);
   USB_SERIAL.println("MultiTimer");
   
-  Timer1.init_for_pulses();
-  Timer3.init_for_pulses();
+  Timer1.init_for_capture();
+  Timer3.init_for_capture();
   Timer4.init_for_capture();
   Timer5.init_for_capture();
 }
