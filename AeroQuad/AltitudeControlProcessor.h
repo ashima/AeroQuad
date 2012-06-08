@@ -49,7 +49,7 @@
  * This function is responsible to process the throttle correction 
  * to keep the current altitude if selected by the user 
  */
-int altitudeHoldThrottleCorrection = 0;
+// int altitudeHoldThrottleCorrection = 0;
 
 void processAltitudeHold()
 {
@@ -60,6 +60,7 @@ void processAltitudeHold()
   // http://aeroquad.com/showthread.php?359-Stable-flight-logic...&p=10325&viewfull=1#post10325
   if (altitudeHoldState == ON) {
 
+    int altitudeHoldThrottleCorrection = INVALID_THROTTLE_CORRECTION;
     // computer altitude error!
     #if defined AltitudeHoldRangeFinder
       if (isOnRangerRange(rangeFinderRange[ALTITUDE_RANGE_FINDER_INDEX])) {
@@ -71,14 +72,14 @@ void processAltitudeHold()
       }
     #endif
     #if defined AltitudeHoldBaro
-//      if (altitudeHoldThrottleCorrection == INVALID_THROTTLE_CORRECTION) {
-//        altitudeHoldThrottleCorrection = updatePID(baroAltitudeToHoldTarget, getBaroAltitude(), &PID[BARO_ALTITUDE_HOLD_PID_IDX]);
-//        altitudeHoldThrottleCorrection = constrain(altitudeHoldThrottleCorrection, minThrottleAdjust, maxThrottleAdjust);
+     if (altitudeHoldThrottleCorrection == INVALID_THROTTLE_CORRECTION) {
+       altitudeHoldThrottleCorrection = updatePID(baroAltitudeToHoldTarget, getBaroAltitude(), &PID[BARO_ALTITUDE_HOLD_PID_IDX]);
+       altitudeHoldThrottleCorrection = constrain(altitudeHoldThrottleCorrection, minThrottleAdjust, maxThrottleAdjust);
 
-		altitudeHoldThrottleCorrection += constrain(100.*(baroAltitudeToHoldTarget - getBaroAltitude()),-5,5);
-		altitudeHoldThrottleCorrection = constrain(altitudeHoldThrottleCorrection, -500,500);
+// 		altitudeHoldThrottleCorrection += constrain(100.*(baroAltitudeToHoldTarget - getBaroAltitude()),-5,5);
+// 		altitudeHoldThrottleCorrection = constrain(altitudeHoldThrottleCorrection, -100,100);
 
-//      }
+     }
     #endif        
     if (altitudeHoldThrottleCorrection == INVALID_THROTTLE_CORRECTION) {
       throttle = receiverCommand[THROTTLE];
@@ -117,7 +118,7 @@ void processAltitudeHold()
     throttle = altitudeHoldThrottle + altitudeHoldThrottleCorrection;// + zDampeningThrottleCorrection;
   }
   else {
-	altitudeHoldThrottleCorrection = 0;
+// 	altitudeHoldThrottleCorrection = 0;
     throttle = receiverCommand[THROTTLE];
   }
 }

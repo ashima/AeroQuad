@@ -1,0 +1,46 @@
+Serial command 'd' to retrieve altitude-hold-related data, 'D' to write it. Make sure to
+send a 'W' to write to EEPROM if configuring via USB, as the unit will reset after a USB
+client is disconnected. Note that 'd' returns comma-delimited values; 'D' needs
+semicolon-delimited values. Don't ask me why. It would probably be best to send 'd', then
+the 'D' string, and then 'd' again, to check that exactly what you expected was changed.
+Then, don't forget the 'W'.
+
+This is the default string:
+D25.00;0.6;0.00;25.00;90;250;-50;50;0.10;0.00;0.00;0.00;
+ ^ P term
+       ^ I term
+           ^ D term
+                ^ windup guard (abs(I) is capped at this value)
+                      ^ altitudeHoldBump (I haven't used this so far)
+                         ^ panic stick movement (move throttle by this much to exit alt hold)
+                             ^ most that can be subtracted from initial throttle
+                                 ^ most that can be added...
+                                    ^ baro smooth factor
+
+File naming:
+* files starting with "servo" use the version of AltitudeControlProcessor.h before this 
+  commit
+* files including 'plusminus100' have the min/max that can be subtracted from throttle
+  changed to... no you guess, I won't tell you
+* files with '#.##I' have the PID.I value changed
+* files with 'wind100' have the windup guard changed
+
+File format:
+	LogValueSpace(currentTime);               // 1
+	LogValueSpace(iterations++);              // 2
+	LogValueSpace(altitudeHoldState);         // 3
+	LogValueSpace(getBaroAltitude());         // 4
+	LogValueSpace(baroAltitudeToHoldTarget);  // 5
+	LogValueSpace(receiverCommand[THROTTLE]); // 6
+	LogValueSpace(throttle);                  // 7
+	LogValueSpace(altitudeHoldThrottle);      // 8
+	//LogValueSpace(altitudeHoldThrottleCorrection);
+	LogValueSpace(PID[BARO_ALTITUDE_HOLD_PID_IDX].integratedError);
+	for (byte motor = 0; motor < LASTMOTOR; motor++) {
+	  LogValueSpace(motorCommand[motor]);
+	}
+	LogValueSpace((float)batteryData[0].voltage/100.0);
+
+For the servo files, pretend that the line commented out is un-commented, and the next one
+is commented-out instead. (This makes sense: we don't care about the PID value when we're
+using Ian's servo method.)

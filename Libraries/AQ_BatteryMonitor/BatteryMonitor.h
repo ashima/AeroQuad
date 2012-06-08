@@ -23,7 +23,7 @@
 
 #include <BatteryMonitorTypes.h>
 
-#define BM_WARNING_RATIO 1.1
+#define BM_WARNING_RATIO 1.03
 
 byte    numberOfBatteries = 0; 
 boolean batteryAlarm      = false;

@@ -35,7 +35,8 @@
 #define ITG3200_RESET_ADDRESS			0x3E
 #define ITG3200_RESET_VALUE				0x80
 #define ITG3200_LOW_PASS_FILTER_ADDR	0x16
-#define ITG3200_LOW_PASS_FILTER_VALUE	0x1D	// 10Hz low pass filter
+//#define ITG3200_LOW_PASS_FILTER_VALUE	0x1D	// 10Hz low pass filter
+#define ITG3200_LOW_PASS_FILTER_VALUE	0x1B	// 42Hz low pass filter
 #define ITG3200_OSCILLATOR_ADDR			0x3E
 #define ITG3200_OSCILLATOR_VALUE		0x01	// use X gyro oscillator
 #define ITG3200_SCALE_TO_RADIANS		823.626831 // 14.375 LSBs per °/sec, / Pi / 180
