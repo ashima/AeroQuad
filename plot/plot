@@ -7,10 +7,11 @@ set title ""
 set xlabel "t (us)"
 set ylabel "altitude (m)"
 set y2label "throttle (PWM)"
-plot f u 1:($$3==0?1/0: $$4) t 'baro', \
+plot f u 1:($$4) t 'baro', \
     '' u 1:($$3==0?1/0: $$5) t 'target', \
-    '' u 1:($$3==0?1/0: $$7) t 'throttle' axes x1y2, \
-    '' u 1:($$3==0?1/0: $$8) t 'holdThrottle' axes x1y2
+    '' u 1:($$7) t 'throttle' axes x1y2, \
+    '' u 1:($$3==0?1/0: $$8) t 'holdThrottle' axes x1y2, \
+    '' u 1:($$3 == 1 ? 1800 : 1000) t 'altitudeHoldOn?' axes x1y2
 
 set term aqua 1
 set xlabel "t (us)"

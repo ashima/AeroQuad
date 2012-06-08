@@ -1362,13 +1362,11 @@ void loop () {
   currentTime = micros();
   deltaTime = currentTime - previousTime;
 
-  if (receiverCommand[AUX1] < 1750 || deltaTime >= 10000)
-    measureCriticalSensors();
-
   // ================================================================
   // 100hz task loop
   // ================================================================
   if (deltaTime >= 10000) {
+    measureCriticalSensors();
     
     frameCounter++;
     
