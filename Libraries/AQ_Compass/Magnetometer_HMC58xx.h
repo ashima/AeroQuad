@@ -55,10 +55,10 @@ void initializeMagnetometer() {
   delay(20);
 
   measureMagnetometer(0.0, 0.0);  // Assume 1st measurement at 0 degrees roll and 0 degrees pitch
+  calculateMagHeading(0.0, 0.0);  // Assume 1st measurement at 0 degrees roll and 0 degrees pitch
 }
-
 void measureMagnetometer(float roll, float pitch) {
-    
+    //do not use roll, pitch here.
   sendByteI2C(COMPASS_ADDRESS, 0x03);
   Wire.requestFrom(COMPASS_ADDRESS, 6);
 
@@ -66,9 +66,30 @@ void measureMagnetometer(float roll, float pitch) {
 
   updateRegisterI2C(COMPASS_ADDRESS, 0x02, 0x01); // start single conversion
 
-  measuredMagX = rawMag[XAXIS] * magScale[XAXIS] + magBias[XAXIS];
-  measuredMagY = rawMag[YAXIS] * magScale[YAXIS] + magBias[YAXIS];
-  measuredMagZ = rawMag[ZAXIS] * magScale[ZAXIS] + magBias[ZAXIS];
+  rawMagSum[XAXIS] += rawMag[XAXIS];
+  rawMagSum[YAXIS] += rawMag[YAXIS];
+  rawMagSum[ZAXIS] += rawMag[ZAXIS];
+  nsamples+=1;
+  
+}
+void calculateMagHeading(float roll, float pitch) {
+    
+//  sendByteI2C(COMPASS_ADDRESS, 0x03);
+//  Wire.requestFrom(COMPASS_ADDRESS, 6);
+
+//  readSpecificMag(rawMag);
+
+//  updateRegisterI2C(COMPASS_ADDRESS, 0x02, 0x01); // start single conversion
+
+  if (nsamples == 0) return;
+  measuredMagX = (rawMagSum[XAXIS]/nsamples) * magScale[XAXIS] + magBias[XAXIS];
+  measuredMagY = (rawMagSum[YAXIS]/nsamples) * magScale[YAXIS] + magBias[YAXIS];
+  measuredMagZ = (rawMagSum[ZAXIS]/nsamples) * magScale[ZAXIS] + magBias[ZAXIS];
+  
+  rawMagSum[XAXIS]=0.0;
+  rawMagSum[YAXIS]=0.0;
+  rawMagSum[ZAXIS]=0.0;
+  nsamples=0;
   
   measuredMag[XAXIS] = measuredMagX;
   measuredMag[YAXIS] = measuredMagY;
