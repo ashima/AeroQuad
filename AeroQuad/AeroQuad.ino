@@ -28,6 +28,10 @@
 
 #include "UserConfiguration.h" // Edit this file first before uploading to the AeroQuad
 
+#define LOG_BAUD 115200
+#define LOG_SERIAL Serial1
+#define LOG_RESET_PIN 41
+
 //
 // Define Security Checks
 //
@@ -1210,6 +1214,12 @@
  */
 void setup() {
   SERIAL_BEGIN(BAUD);
+  LOG_SERIAL.begin(LOG_BAUD);
+
+  digitalWrite(LOG_RESET_PIN, HIGH);
+  pinMode(LOG_RESET_PIN, OUTPUT);
+  digitalWrite(LOG_RESET_PIN, LOW);
+
   pinMode(LED_Green, OUTPUT);
   digitalWrite(LED_Green, LOW);
   
@@ -1321,6 +1331,11 @@ void setup() {
   safetyCheck = 0;
 }
 
+template<typename t>
+void LogValueSpace(t v) {
+  LOG_SERIAL.print(v);
+  LOG_SERIAL.print(' ');
+}
 /*******************************************************************
   // tasks (microseconds of interval)
   ReadGyro        readGyro      (as fast as we can depending of the platform)
@@ -1491,7 +1506,40 @@ void loop () {
         updateSlowTelemetry10Hz();
       #endif
     }
-  
+    else if (frameCounter % TASK_10HZ == 5) {
+      static uint16_t iterations = 0;
+      static bool got_lt_char = false;
+      
+      while (!got_lt_char && LOG_SERIAL.available()) {
+        char c = LOG_SERIAL.read();
+        Serial.write(c);
+        got_lt_char = c == '<';
+      }
+      while (got_lt_char && LOG_SERIAL.available()) {
+        char c = LOG_SERIAL.read();
+        Serial.write(c);
+      }
+      
+      if (got_lt_char && motorArmed == ON) {
+        LogValueSpace(currentTime);               // 1
+        LogValueSpace(iterations++);              // 2
+        LogValueSpace(altitudeHoldState);         // 3
+        LogValueSpace(getBaroAltitude());         // 4
+        LogValueSpace(baroAltitudeToHoldTarget);  // 5
+        LogValueSpace(receiverCommand[THROTTLE]); // 6
+        LogValueSpace(throttle);                  // 7
+        LogValueSpace(altitudeHoldThrottle);      // 8
+        //LogValueSpace(altitudeHoldThrottleCorrection);
+        LogValueSpace(PID[BARO_ALTITUDE_HOLD_PID_IDX].integratedError);
+        for (byte motor = 0; motor < LASTMOTOR; motor++) {
+          LogValueSpace(motorCommand[motor]);
+        }
+        LogValueSpace((float)batteryData[0].voltage/100.0);
+
+        LOG_SERIAL.println();
+      }
+    }
+
     previousTime = currentTime;
   }
   
