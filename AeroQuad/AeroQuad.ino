@@ -1396,7 +1396,7 @@ void loop () {
                         filteredAccel[ZAXIS],
                         G_Dt);
 
-
+        measureMagnetometer(kinematicsAngle[XAXIS], kinematicsAngle[YAXIS]);
     // Evaluate are here because we want it to be synchronized with the processFlightControl
     #if defined AltitudeHoldBaro
       measureBaroSum(); 
@@ -1459,7 +1459,8 @@ void loop () {
         G_Dt = (currentTime - tenHZpreviousTime) / 1000000.0;
         tenHZpreviousTime = currentTime;
          
-        measureMagnetometer(kinematicsAngle[XAXIS], kinematicsAngle[YAXIS]);
+
+ 		calculateMagHeading(kinematicsAngle[XAXIS], kinematicsAngle[YAXIS]);
         calculateHeading(gyroRate[XAXIS],
                          gyroRate[YAXIS],
                          gyroRate[ZAXIS],
