@@ -38,6 +38,7 @@
 #define BMA180_BW_TCS 0x20
 #define BMA180_LOW_PASS_FILTER_REGISTER 0x20
 #define BMA180_10HZ_LOW_PASS_FILTER_VALUE 0x0F
+#define BMA180_40HZ_LOW_PASS_FILTER_VALUE 0x03
 #define BMA180_1200HZ_LOW_PASS_FILTER_VALUE 0X7F
 #define BMA180_OFFSET_REGISTER 0x35
 #define BMA180_READ_ROLL_ADDRESS 0x02
@@ -60,7 +61,7 @@ void initializeAccel() {
   updateRegisterI2C(BMA180_ADDRESS, BMA180_ENABLE_WRITE_CONTROL_REGISTER, BMA180_CONTROL_REGISTER); 		//enable writing to control registers
   sendByteI2C(BMA180_ADDRESS, BMA180_BW_TCS); 															// register bw_tcs (bits 4-7)
   byte data = readByteI2C(BMA180_ADDRESS); 																// get current register value
-  updateRegisterI2C(BMA180_ADDRESS, BMA180_LOW_PASS_FILTER_REGISTER, data & BMA180_1200HZ_LOW_PASS_FILTER_VALUE); 	// set low pass filter to 1.2kHz (value = 0000xxxx)
+  updateRegisterI2C(BMA180_ADDRESS, BMA180_LOW_PASS_FILTER_REGISTER, data & BMA180_40HZ_LOW_PASS_FILTER_VALUE); 	// set low pass filter to 40Hz (value = 0000xxxx)
 
   // From page 27 of BMA180 Datasheet
   //  1.0g = 0.13 mg/LSB
