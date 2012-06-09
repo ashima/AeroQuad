@@ -1346,14 +1346,14 @@ void loop () {
   currentTime = micros();
   deltaTime = currentTime - previousTime;
 
-  measureCriticalSensors();
-
+  
   // ================================================================
   // 100hz task loop
   // ================================================================
   if (deltaTime >= 10000) {
-    
+  
     frameCounter++;
+    measureCriticalSensors();
     
     G_Dt = (currentTime - hundredHZpreviousTime) / 1000000.0;
     hundredHZpreviousTime = currentTime;
