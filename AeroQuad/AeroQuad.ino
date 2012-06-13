@@ -1507,23 +1507,23 @@ void loop () {
 //cl//    if (frameCounter % TASK_10HZ == 0) {  //   10 Hz tasks
 //cl//  sbi(PORTA,PA2);
 
-      #if defined(HeadingMagHold)
+//cl//      #if defined(HeadingMagHold)
 //cl//        G_Dt = (currentTime - tenHZpreviousTime) / 1000000.0;
 //cl//        tenHZpreviousTime = currentTime;
          
 
 //cl// 		calculateMagHeading(kinematicsAngle[XAXIS], kinematicsAngle[YAXIS]);
-        calculateHeading(gyroRate[XAXIS],
-                         gyroRate[YAXIS],
-                         gyroRate[ZAXIS],
-                         filteredAccel[XAXIS],
-                         filteredAccel[YAXIS],
-                         filteredAccel[ZAXIS],
-                         accelOneG,
-                         getHdgXY(XAXIS),
-                         getHdgXY(YAXIS),
-                         G_Dt);
-      #endif
+//cl//        calculateHeading(gyroRate[XAXIS],
+//cl//                         gyroRate[YAXIS],
+//cl//                         gyroRate[ZAXIS],
+//cl//                         filteredAccel[XAXIS],
+//cl//                         filteredAccel[YAXIS],
+//cl//                         filteredAccel[ZAXIS],
+//cl//                         accelOneG,
+//cl//                         getHdgXY(XAXIS),
+//cl//                         getHdgXY(YAXIS),
+//cl//                         G_Dt);
+//cl//      #endif
 //cl//    cbi(PORTA,PA2);
 //cl//    }
 //cl//    else if ((currentTime - lowPriorityTenHZpreviousTime) > 100000) {
@@ -1566,36 +1566,36 @@ void loop () {
 //cl//    }
 //cl//    else if (frameCounter % TASK_10HZ == 5) {
 //cl//  sbi(PORTA,PA2);
-//cl//      static uint16_t iterations = 0;
-//cl//      static bool got_lt_char = false;
-//cl//      
-//cl//      while (!got_lt_char && LOG_SERIAL.available()) {
-//cl//        char c = LOG_SERIAL.read();
-//cl//        Serial.write(c);
-//cl//        got_lt_char = c == '<';
-//cl//      }
-//cl//      while (got_lt_char && LOG_SERIAL.available()) {
-//cl//        char c = LOG_SERIAL.read();
-//cl//        Serial.write(c);
-//cl//      }
-//cl//      
+      static uint16_t iterations = 0;
+      static bool got_lt_char = false;
+      
+      while (!got_lt_char && LOG_SERIAL.available()) {
+        char c = LOG_SERIAL.read();
+        Serial.write(c);
+        got_lt_char = c == '<';
+      }
+      while (got_lt_char && LOG_SERIAL.available()) {
+        char c = LOG_SERIAL.read();
+        Serial.write(c);
+      }
+      
 //cl//      if (got_lt_char && motorArmed == ON) {
-//cl//        LogValueSpace(currentTime);               // 1
-//cl//        LogValueSpace(iterations++);              // 2
-//cl//        LogValueSpace(altitudeHoldState);         // 3
-//cl//        LogValueSpace(getBaroAltitude());         // 4
-//cl//        LogValueSpace(baroAltitudeToHoldTarget);  // 5
-//cl//        LogValueSpace(receiverCommand[THROTTLE]); // 6
-//cl//        LogValueSpace(throttle);                  // 7
-//cl//        LogValueSpace(altitudeHoldThrottle);      // 8
-//cl//        //LogValueSpace(altitudeHoldThrottleCorrection);
-//cl//        LogValueSpace(PID[BARO_ALTITUDE_HOLD_PID_IDX].integratedError);
-//cl//        for (byte motor = 0; motor < LASTMOTOR; motor++) {
-//cl//          LogValueSpace(motorCommand[motor]);
-//cl//        }
-//cl//        LogValueSpace((float)batteryData[0].voltage/100.0);
-//cl//
-//cl//        LOG_SERIAL.println();
+        LogValueSpace(currentTime);               // 1
+        LogValueSpace(iterations++);              // 2
+        LogValueSpace(altitudeHoldState);         // 3
+        LogValueSpace(getBaroAltitude());         // 4
+        LogValueSpace(baroAltitudeToHoldTarget);  // 5
+        LogValueSpace(receiverCommand[THROTTLE]); // 6
+        LogValueSpace(throttle);                  // 7
+        LogValueSpace(altitudeHoldThrottle);      // 8
+        //LogValueSpace(altitudeHoldThrottleCorrection);
+        LogValueSpace(PID[BARO_ALTITUDE_HOLD_PID_IDX].integratedError);
+        for (byte motor = 0; motor < LASTMOTOR; motor++) {
+          LogValueSpace(motorCommand[motor]);
+        }
+        LogValueSpace((float)batteryData[0].voltage/100.0);
+
+        LOG_SERIAL.println();
 //cl//      }
 //cl//cbi(PORTA,PA2);
 //cl//    }
