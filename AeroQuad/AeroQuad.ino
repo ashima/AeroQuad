@@ -1422,8 +1422,8 @@ void loop () {
 //cl//    G_Dt = (currentTime - hundredHZpreviousTime) / 1000000.0;
 //cl//    hundredHZpreviousTime = currentTime;
 //cl//    
-    evaluateGyroRate();
-//cl//    evaluateMetersPerSec();
+//cl//    evaluateGyroRate();
+    evaluateMetersPerSec();
 //cl//
 //cl//    for (int axis = XAXIS; axis <= ZAXIS; axis++) {
 //cl//      filteredAccel[axis] = computeFourthOrder(meterPerSecSec[axis], &fourthOrder[axis]);
