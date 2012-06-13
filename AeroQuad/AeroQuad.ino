@@ -1416,13 +1416,13 @@ void loop () {
 //cl//  sbi(PORTA,PA3);
 //cl//
 //cl//  
-    frameCounter++;
-    measureCriticalSensors();
-    
-    G_Dt = (currentTime - hundredHZpreviousTime) / 1000000.0;
-    hundredHZpreviousTime = currentTime;
-    
-//cl//    evaluateGyroRate();
+//cl//    frameCounter++;
+//cl//    measureCriticalSensors();
+//cl//    
+//cl//    G_Dt = (currentTime - hundredHZpreviousTime) / 1000000.0;
+//cl//    hundredHZpreviousTime = currentTime;
+//cl//    
+    evaluateGyroRate();
 //cl//    evaluateMetersPerSec();
 //cl//
 //cl//    for (int axis = XAXIS; axis <= ZAXIS; axis++) {
