@@ -1424,11 +1424,11 @@ void loop () {
 //cl//    
 //cl//    evaluateGyroRate();
 //cl//    evaluateMetersPerSec();
-
-    for (int axis = XAXIS; axis <= ZAXIS; axis++) {
-      filteredAccel[axis] = computeFourthOrder(meterPerSecSec[axis], &fourthOrder[axis]);
-    }
-      
+//cl//
+//cl//    for (int axis = XAXIS; axis <= ZAXIS; axis++) {
+//cl//      filteredAccel[axis] = computeFourthOrder(meterPerSecSec[axis], &fourthOrder[axis]);
+//cl//    }
+//cl//      
 //cl////    #if defined (AltitudeHoldBaro) || defined (AltitudeHoldRangeFinder)
 //cl////       float estimatedXVelocity = (smootedAccel[XAXIS] * (1 - invSqrt(isq(smootedAccel[XAXIS]) + isq(smootedAccel[YAXIS]) + isq(smootedAccel[ZAXIS]))));
 //cl////       float estimatedYVelocity = (smootedAccel[YAXIS] * (1 - invSqrt(isq(smootedAccel[XAXIS]) + isq(smootedAccel[YAXIS]) + isq(smootedAccel[ZAXIS]))));
@@ -1437,14 +1437,14 @@ void loop () {
 //cl//      
 //cl//      
 //cl//    /* calculate kinematics*/
-//cl//    calculateKinematics(gyroRate[XAXIS],
-//cl//                        gyroRate[YAXIS],
-//cl//                        gyroRate[ZAXIS],
-//cl//                        filteredAccel[XAXIS],
-//cl//                        filteredAccel[YAXIS],
-//cl//                        filteredAccel[ZAXIS],
-//cl//                        G_Dt);
-//cl//
+    calculateKinematics(gyroRate[XAXIS],
+                        gyroRate[YAXIS],
+                        gyroRate[ZAXIS],
+                        filteredAccel[XAXIS],
+                        filteredAccel[YAXIS],
+                        filteredAccel[ZAXIS],
+                        G_Dt);
+
 //cl//        measureMagnetometer(kinematicsAngle[XAXIS], kinematicsAngle[YAXIS]);
 //cl//    // Evaluate are here because we want it to be synchronized with the processFlightControl
 //cl//    #if defined AltitudeHoldBaro
