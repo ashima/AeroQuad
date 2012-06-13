@@ -1508,21 +1508,21 @@ void loop () {
 //cl//  sbi(PORTA,PA2);
 
       #if defined(HeadingMagHold)
-        G_Dt = (currentTime - tenHZpreviousTime) / 1000000.0;
-        tenHZpreviousTime = currentTime;
+//cl//        G_Dt = (currentTime - tenHZpreviousTime) / 1000000.0;
+//cl//        tenHZpreviousTime = currentTime;
          
 
  		calculateMagHeading(kinematicsAngle[XAXIS], kinematicsAngle[YAXIS]);
-        calculateHeading(gyroRate[XAXIS],
-                         gyroRate[YAXIS],
-                         gyroRate[ZAXIS],
-                         filteredAccel[XAXIS],
-                         filteredAccel[YAXIS],
-                         filteredAccel[ZAXIS],
-                         accelOneG,
-                         getHdgXY(XAXIS),
-                         getHdgXY(YAXIS),
-                         G_Dt);
+//cl//        calculateHeading(gyroRate[XAXIS],
+//cl//                         gyroRate[YAXIS],
+//cl//                         gyroRate[ZAXIS],
+//cl//                         filteredAccel[XAXIS],
+//cl//                         filteredAccel[YAXIS],
+//cl//                         filteredAccel[ZAXIS],
+//cl//                         accelOneG,
+//cl//                         getHdgXY(XAXIS),
+//cl//                         getHdgXY(YAXIS),
+//cl//                         G_Dt);
       #endif
 //cl//    cbi(PORTA,PA2);
 //cl//    }
