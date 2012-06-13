@@ -1474,30 +1474,30 @@ void loop () {
 //cl//    if (frameCounter % TASK_50HZ == 0) {  //  50 Hz tasks
 //cl//  sbi(PORTA,PA1);
 //cl//
-      G_Dt = (currentTime - fiftyHZpreviousTime) / 1000000.0;
-      fiftyHZpreviousTime = currentTime;
-
-      // Reads external pilot commands and performs functions based on stick configuration
-      readPilotCommands(); 
-      
-      #if defined (UseRSSIFaileSafe) 
-        readRSSI();
-      #endif
-
-      #ifdef AltitudeHoldRangeFinder
-        updateRangeFinders();
-      #endif
-
-      #if defined (UseGPS)
-        readGps();
-        if (haveAGpsLock() && !isHomeBaseInitialized()) {
-          initHomeBase();
-        }
-      #endif      
-      
-      #if defined(CameraControl)
-        moveCamera(kinematicsAngle[YAXIS],kinematicsAngle[XAXIS],kinematicsAngle[ZAXIS]);
-      #endif
+//cl//      G_Dt = (currentTime - fiftyHZpreviousTime) / 1000000.0;
+//cl//      fiftyHZpreviousTime = currentTime;
+//cl//
+//cl//      // Reads external pilot commands and performs functions based on stick configuration
+//cl//      readPilotCommands(); 
+//cl//      
+//cl//      #if defined (UseRSSIFaileSafe) 
+//cl//        readRSSI();
+//cl//      #endif
+//cl//
+//cl//      #ifdef AltitudeHoldRangeFinder
+//cl//        updateRangeFinders();
+//cl//      #endif
+//cl//
+//cl//      #if defined (UseGPS)
+//cl//        readGps();
+//cl//        if (haveAGpsLock() && !isHomeBaseInitialized()) {
+//cl//          initHomeBase();
+//cl//        }
+//cl//      #endif      
+//cl//      
+//cl//      #if defined(CameraControl)
+//cl//        moveCamera(kinematicsAngle[YAXIS],kinematicsAngle[XAXIS],kinematicsAngle[ZAXIS]);
+//cl//      #endif
 //cl//      cbi(PORTA,PA1);
 //cl//    }
 //cl//
@@ -1506,24 +1506,24 @@ void loop () {
 //cl//    // ================================================================
 //cl//    if (frameCounter % TASK_10HZ == 0) {  //   10 Hz tasks
 //cl//  sbi(PORTA,PA2);
-//cl//
-//cl//      #if defined(HeadingMagHold)
-//cl//        G_Dt = (currentTime - tenHZpreviousTime) / 1000000.0;
-//cl//        tenHZpreviousTime = currentTime;
-//cl//         
-//cl//
-//cl// 		calculateMagHeading(kinematicsAngle[XAXIS], kinematicsAngle[YAXIS]);
-//cl//        calculateHeading(gyroRate[XAXIS],
-//cl//                         gyroRate[YAXIS],
-//cl//                         gyroRate[ZAXIS],
-//cl//                         filteredAccel[XAXIS],
-//cl//                         filteredAccel[YAXIS],
-//cl//                         filteredAccel[ZAXIS],
-//cl//                         accelOneG,
-//cl//                         getHdgXY(XAXIS),
-//cl//                         getHdgXY(YAXIS),
-//cl//                         G_Dt);
-//cl//      #endif
+
+      #if defined(HeadingMagHold)
+        G_Dt = (currentTime - tenHZpreviousTime) / 1000000.0;
+        tenHZpreviousTime = currentTime;
+         
+
+ 		calculateMagHeading(kinematicsAngle[XAXIS], kinematicsAngle[YAXIS]);
+        calculateHeading(gyroRate[XAXIS],
+                         gyroRate[YAXIS],
+                         gyroRate[ZAXIS],
+                         filteredAccel[XAXIS],
+                         filteredAccel[YAXIS],
+                         filteredAccel[ZAXIS],
+                         accelOneG,
+                         getHdgXY(XAXIS),
+                         getHdgXY(YAXIS),
+                         G_Dt);
+      #endif
 //cl//    cbi(PORTA,PA2);
 //cl//    }
 //cl//    else if ((currentTime - lowPriorityTenHZpreviousTime) > 100000) {
