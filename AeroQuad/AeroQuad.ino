@@ -26,7 +26,7 @@
    or talk to us live on IRC #aeroquad
 *****************************************************************************/
 #define ASHIMA_DEBUG 1
-#include "MultiTimer_interface.h"
+#include "MultiTimer_Interface.h"
 #include "UserConfiguration.h" // Edit this file first before uploading to the AeroQuad
 
 #define LOG_BAUD 115200
@@ -1400,172 +1400,160 @@ void LogValueSpace(t v) {
   sched.run();
 *******************************************************************/
 void loop () {
- sbi(PORTA,PA0);
- sbi(PORTA,PA3);
+  
+  currentTime = micros();
+  deltaTime = currentTime - previousTime;
 
- cbi(PORTA,PA0);
- currentTime = micros();
- deltaTime = currentTime - previousTime;
-//cl//
-//cl//  
-//cl//  // ================================================================
-//cl//  // 100hz task loop
-//cl//  // ================================================================
-//cl//  if (deltaTime >= 10000) {
-//cl//  sbi(PORTA,PA0);
-//cl//  sbi(PORTA,PA3);
-//cl//
-//cl//  
-//cl//    frameCounter++;
-//cl//    measureCriticalSensors();
-//cl//    
-//cl//    G_Dt = (currentTime - hundredHZpreviousTime) / 1000000.0;
-//cl//    hundredHZpreviousTime = currentTime;
-//cl//    
-//cl//    evaluateGyroRate();
-//cl//    evaluateMetersPerSec();
-//cl//
-//cl//    for (int axis = XAXIS; axis <= ZAXIS; axis++) {
-//cl//      filteredAccel[axis] = computeFourthOrder(meterPerSecSec[axis], &fourthOrder[axis]);
-//cl//    }
-//cl//      
-//cl////    #if defined (AltitudeHoldBaro) || defined (AltitudeHoldRangeFinder)
-//cl////       float estimatedXVelocity = (smootedAccel[XAXIS] * (1 - invSqrt(isq(smootedAccel[XAXIS]) + isq(smootedAccel[YAXIS]) + isq(smootedAccel[ZAXIS]))));
-//cl////       float estimatedYVelocity = (smootedAccel[YAXIS] * (1 - invSqrt(isq(smootedAccel[XAXIS]) + isq(smootedAccel[YAXIS]) + isq(smootedAccel[ZAXIS]))));
-//cl////       float estimatedZVelocity = (smootedAccel[ZAXIS] * (1 - accelOneG * invSqrt(isq(smootedAccel[XAXIS]) + isq(smootedAccel[YAXIS]) + isq(smootedAccel[ZAXIS])))) - runTimeAccelBias[ZAXIS];
-//cl////    #endif         
-//cl//      
-//cl//      
-//cl//    /* calculate kinematics*/
-//cl//    calculateKinematics(gyroRate[XAXIS],
-//cl//                        gyroRate[YAXIS],
-//cl//                        gyroRate[ZAXIS],
-//cl//                        filteredAccel[XAXIS],
-//cl//                        filteredAccel[YAXIS],
-//cl//                        filteredAccel[ZAXIS],
-//cl//                        G_Dt);
-//cl//
-//cl//        measureMagnetometer(kinematicsAngle[XAXIS], kinematicsAngle[YAXIS]);
+  
+  // ================================================================
+  // 100hz task loop
+  // ================================================================
+  if (deltaTime >= 10000) {
+	sbi(PORTA,PA0);
+	sbi(PORTA,PA1);
+    frameCounter++;
+    measureCriticalSensors();
+    
+    G_Dt = (currentTime - hundredHZpreviousTime) / 1000000.0;
+    hundredHZpreviousTime = currentTime;
+    
+    evaluateGyroRate();
+    evaluateMetersPerSec();
+
+    for (int axis = XAXIS; axis <= ZAXIS; axis++) {
+      filteredAccel[axis] = computeFourthOrder(meterPerSecSec[axis], &fourthOrder[axis]);
+    }
+      
+//    #if defined (AltitudeHoldBaro) || defined (AltitudeHoldRangeFinder)
+//       float estimatedXVelocity = (smootedAccel[XAXIS] * (1 - invSqrt(isq(smootedAccel[XAXIS]) + isq(smootedAccel[YAXIS]) + isq(smootedAccel[ZAXIS]))));
+//       float estimatedYVelocity = (smootedAccel[YAXIS] * (1 - invSqrt(isq(smootedAccel[XAXIS]) + isq(smootedAccel[YAXIS]) + isq(smootedAccel[ZAXIS]))));
+//       float estimatedZVelocity = (smootedAccel[ZAXIS] * (1 - accelOneG * invSqrt(isq(smootedAccel[XAXIS]) + isq(smootedAccel[YAXIS]) + isq(smootedAccel[ZAXIS])))) - runTimeAccelBias[ZAXIS];
+//    #endif         
+      
+      
+    /* calculate kinematics*/
+    calculateKinematics(gyroRate[XAXIS],
+                        gyroRate[YAXIS],
+                        gyroRate[ZAXIS],
+                        filteredAccel[XAXIS],
+                        filteredAccel[YAXIS],
+                        filteredAccel[ZAXIS],
+                        G_Dt);
+
+        measureMagnetometer(kinematicsAngle[XAXIS], kinematicsAngle[YAXIS]);
     // Evaluate are here because we want it to be synchronized with the processFlightControl
-//cl//    #if defined AltitudeHoldBaro
-//cl//      measureBaroSum(); 
-//cl//      if (frameCounter % THROTTLE_ADJUST_TASK_SPEED == 0) {  //  50 Hz tasks
-//cl//        evaluateBaroAltitude();
-//cl//      }
-//cl//    #endif
-//cl//          
-//cl//    // Combines external pilot commands and measured sensor data to generate motor commands
-//cl//    processFlightControl();
-//cl//    
-//cl//    #ifdef BinaryWrite
-//cl//      if (fastTransfer == ON) {
-//cl//        // write out fastTelemetry to Configurator or openLog
-//cl//        fastTelemetry();
-//cl//      }
-//cl//    #endif
-//cl//
-//cl//    #ifdef SlowTelemetry
-//cl//      updateSlowTelemetry100Hz();
-//cl//    #endif
-//cl//	cbi(PORTA,PA0);
-//cl//    // ================================================================
-//cl//    // 50hz task loop
-//cl//    // ================================================================
-//cl//    if (frameCounter % TASK_50HZ == 0) {  //  50 Hz tasks
-//cl//  sbi(PORTA,PA1);
-//cl//
-//cl//      G_Dt = (currentTime - fiftyHZpreviousTime) / 1000000.0;
-//cl//      fiftyHZpreviousTime = currentTime;
-//cl//
-//cl//      // Reads external pilot commands and performs functions based on stick configuration
-//cl//      readPilotCommands(); 
-//cl//      
-//cl//      #if defined (UseRSSIFaileSafe) 
-//cl//        readRSSI();
-//cl//      #endif
-//cl//
-//cl//      #ifdef AltitudeHoldRangeFinder
-//cl//        updateRangeFinders();
-//cl//      #endif
-//cl//
-//cl//      #if defined (UseGPS)
-//cl//        readGps();
-//cl//        if (haveAGpsLock() && !isHomeBaseInitialized()) {
-//cl//          initHomeBase();
-//cl//        }
-//cl//      #endif      
-//cl//      
-//cl//      #if defined(CameraControl)
-//cl//        moveCamera(kinematicsAngle[YAXIS],kinematicsAngle[XAXIS],kinematicsAngle[ZAXIS]);
-//cl//      #endif
-//cl//      cbi(PORTA,PA1);
-//cl//    }
-//cl//
-//cl//    // ================================================================
-//cl//    // 10hz task loop
-//cl//    // ================================================================
-//cl//    if (frameCounter % TASK_10HZ == 0) {  //   10 Hz tasks
-//cl//  sbi(PORTA,PA2);
+    #if defined AltitudeHoldBaro
+      measureBaroSum(); 
+      if (frameCounter % THROTTLE_ADJUST_TASK_SPEED == 0) {  //  50 Hz tasks
+        evaluateBaroAltitude();
+      }
+    #endif
+          
+    // Combines external pilot commands and measured sensor data to generate motor commands
+    processFlightControl();
+    
+    #ifdef BinaryWrite
+      if (fastTransfer == ON) {
+        // write out fastTelemetry to Configurator or openLog
+        fastTelemetry();
+      }
+    #endif
 
-//cl//      #if defined(HeadingMagHold)
-//cl//        G_Dt = (currentTime - tenHZpreviousTime) / 1000000.0;
-//cl//        tenHZpreviousTime = currentTime;
+    #ifdef SlowTelemetry
+      updateSlowTelemetry100Hz();
+    #endif
+	cbi(PORTA,PA0);
+    // ================================================================
+    // 50hz task loop
+    // ================================================================
+    if (frameCounter % TASK_50HZ == 0) {  //  50 Hz tasks
+	sbi(PORTA,PA2);
+      G_Dt = (currentTime - fiftyHZpreviousTime) / 1000000.0;
+      fiftyHZpreviousTime = currentTime;
+
+      // Reads external pilot commands and performs functions based on stick configuration
+      readPilotCommands(); 
+      
+      #if defined (UseRSSIFaileSafe) 
+        readRSSI();
+      #endif
+
+      #ifdef AltitudeHoldRangeFinder
+        updateRangeFinders();
+      #endif
+
+      #if defined (UseGPS)
+        readGps();
+        if (haveAGpsLock() && !isHomeBaseInitialized()) {
+          initHomeBase();
+        }
+      #endif      
+      
+      #if defined(CameraControl)
+        moveCamera(kinematicsAngle[YAXIS],kinematicsAngle[XAXIS],kinematicsAngle[ZAXIS]);
+      #endif
+	cbi(PORTA,PA2);
+    }
+
+    // ================================================================
+    // 10hz task loop
+    // ================================================================
+	sbi(PORTA,PA3);
+    if (frameCounter % TASK_10HZ == 0) {  //   10 Hz tasks
+
+      #if defined(HeadingMagHold)
+        G_Dt = (currentTime - tenHZpreviousTime) / 1000000.0;
+        tenHZpreviousTime = currentTime;
          
 
-//cl// 		calculateMagHeading(kinematicsAngle[XAXIS], kinematicsAngle[YAXIS]);
-//cl//        calculateHeading(gyroRate[XAXIS],
-//cl//                         gyroRate[YAXIS],
-//cl//                         gyroRate[ZAXIS],
-//cl//                         filteredAccel[XAXIS],
-//cl//                         filteredAccel[YAXIS],
-//cl//                         filteredAccel[ZAXIS],
-//cl//                         accelOneG,
-//cl//                         getHdgXY(XAXIS),
-//cl//                         getHdgXY(YAXIS),
-//cl//                         G_Dt);
-//cl//      #endif
-//cl//    cbi(PORTA,PA2);
-//cl//    }
-//cl//    else if ((currentTime - lowPriorityTenHZpreviousTime) > 100000) {
-//cl//
-//cl//      G_Dt = (currentTime - lowPriorityTenHZpreviousTime) / 1000000.0;
-//cl//      lowPriorityTenHZpreviousTime = currentTime;
-//cl//      
-//cl//      #if defined(BattMonitor)
-//cl//        measureBatteryVoltage(G_Dt*1000.0);
-//cl//      #endif
-//cl//
-//cl//      // Listen for configuration commands and reports telemetry
-//cl//      readSerialCommand(); // defined in SerialCom.pde
-//cl//      sendSerialTelemetry(); // defined in SerialCom.pde
-//cl//
-//cl//    }
-//cl//    else if ((currentTime - lowPriorityTenHZpreviousTime2) > 100000) {
-//cl//
-//cl//
-//cl//      G_Dt = (currentTime - lowPriorityTenHZpreviousTime2) / 1000000.0;
-//cl//      lowPriorityTenHZpreviousTime2 = currentTime;
-//cl//
-//cl//      #ifdef OSD_SYSTEM_MENU
-//cl//        updateOSDMenu();
-//cl//      #endif
-//cl//
-//cl//      #ifdef MAX7456_OSD
-//cl//        updateOSD();
-//cl//      #endif
-//cl//      
-//cl//      #if defined (UseGPS) || defined (BattMonitor)
-//cl//        processLedStatus();
-//cl//      #endif
-//cl//      
-//cl//      #ifdef SlowTelemetry
-//cl//        updateSlowTelemetry10Hz();
-//cl//      #endif
-//cl//          cbi(PORTA,PA2);
-//cl//
-//cl//    }
-//cl//    else if (frameCounter % TASK_10HZ == 5) {
-//cl//  sbi(PORTA,PA2);
+ 		calculateMagHeading(kinematicsAngle[XAXIS], kinematicsAngle[YAXIS]);
+        calculateHeading(gyroRate[XAXIS],
+                         gyroRate[YAXIS],
+                         gyroRate[ZAXIS],
+                         filteredAccel[XAXIS],
+                         filteredAccel[YAXIS],
+                         filteredAccel[ZAXIS],
+                         accelOneG,
+                         getHdgXY(XAXIS),
+                         getHdgXY(YAXIS),
+                         G_Dt);
+      #endif
+    }
+    else if ((currentTime - lowPriorityTenHZpreviousTime) > 100000) {
+
+      G_Dt = (currentTime - lowPriorityTenHZpreviousTime) / 1000000.0;
+      lowPriorityTenHZpreviousTime = currentTime;
+      
+      #if defined(BattMonitor)
+        measureBatteryVoltage(G_Dt*1000.0);
+      #endif
+
+      // Listen for configuration commands and reports telemetry
+      readSerialCommand(); // defined in SerialCom.pde
+      sendSerialTelemetry(); // defined in SerialCom.pde
+    }
+    else if ((currentTime - lowPriorityTenHZpreviousTime2) > 100000) {
+      
+      G_Dt = (currentTime - lowPriorityTenHZpreviousTime2) / 1000000.0;
+      lowPriorityTenHZpreviousTime2 = currentTime;
+
+      #ifdef OSD_SYSTEM_MENU
+        updateOSDMenu();
+      #endif
+
+      #ifdef MAX7456_OSD
+        updateOSD();
+      #endif
+      
+      #if defined (UseGPS) || defined (BattMonitor)
+        processLedStatus();
+      #endif
+      
+      #ifdef SlowTelemetry
+        updateSlowTelemetry10Hz();
+      #endif
+    }
+    else if (frameCounter % TASK_10HZ == 5) {
       static uint16_t iterations = 0;
       static bool got_lt_char = false;
       
@@ -1579,7 +1567,7 @@ void loop () {
         Serial.write(c);
       }
       
-//cl//      if (got_lt_char && motorArmed == ON) {
+      if (got_lt_char && motorArmed == ON) {
         LogValueSpace(currentTime);               // 1
         LogValueSpace(iterations++);              // 2
         LogValueSpace(altitudeHoldState);         // 3
@@ -1596,20 +1584,16 @@ void loop () {
         LogValueSpace((float)batteryData[0].voltage/100.0);
 
         LOG_SERIAL.println();
-//cl//      }
-//cl//cbi(PORTA,PA2);
-//cl//    }
-//cl//
-//cl//    previousTime = currentTime;
-//cl//cbi(PORTA,PA3);
-//cl//
-//cl//  }
-//cl//  
-//cl//  if (frameCounter >= 100) {
-//cl//      frameCounter = 0;
-//cl//  }
- cbi(PORTA,PA3);
-
+      }
+    }
+	cbi(PORTA,PA3);
+	cbi(PORTA,PA1);
+    previousTime = currentTime;
+  }
+  
+  if (frameCounter >= 100) {
+      frameCounter = 0;
+  }
 }
 
 
