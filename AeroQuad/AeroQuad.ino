@@ -1437,15 +1437,15 @@ void loop () {
 //cl//      
 //cl//      
 //cl//    /* calculate kinematics*/
-    calculateKinematics(gyroRate[XAXIS],
-                        gyroRate[YAXIS],
-                        gyroRate[ZAXIS],
-                        filteredAccel[XAXIS],
-                        filteredAccel[YAXIS],
-                        filteredAccel[ZAXIS],
-                        G_Dt);
-
-//cl//        measureMagnetometer(kinematicsAngle[XAXIS], kinematicsAngle[YAXIS]);
+//cl//    calculateKinematics(gyroRate[XAXIS],
+//cl//                        gyroRate[YAXIS],
+//cl//                        gyroRate[ZAXIS],
+//cl//                        filteredAccel[XAXIS],
+//cl//                        filteredAccel[YAXIS],
+//cl//                        filteredAccel[ZAXIS],
+//cl//                        G_Dt);
+//cl//
+        measureMagnetometer(kinematicsAngle[XAXIS], kinematicsAngle[YAXIS]);
 //cl//    // Evaluate are here because we want it to be synchronized with the processFlightControl
 //cl//    #if defined AltitudeHoldBaro
 //cl//      measureBaroSum(); 
