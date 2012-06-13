@@ -1448,9 +1448,9 @@ void loop () {
 //cl//        measureMagnetometer(kinematicsAngle[XAXIS], kinematicsAngle[YAXIS]);
     // Evaluate are here because we want it to be synchronized with the processFlightControl
     #if defined AltitudeHoldBaro
-      measureBaroSum(); 
+//cl//      measureBaroSum(); 
 //cl//      if (frameCounter % THROTTLE_ADJUST_TASK_SPEED == 0) {  //  50 Hz tasks
-//cl//        evaluateBaroAltitude();
+        evaluateBaroAltitude();
 //cl//      }
     #endif
 //cl//          
