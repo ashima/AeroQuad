@@ -105,7 +105,7 @@ int testCommand = 1000;
 byte flightMode = RATE_FLIGHT_MODE;
 unsigned long frameCounter = 0; // main loop executive frame counter
 int minArmedThrottle; // initial value configured by user
-
+unsigned long tenHZtimes[10]=0;
 float G_Dt = 0.002; 
 int throttle = 1000;
 byte motorArmed = OFF;

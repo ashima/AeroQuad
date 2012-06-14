@@ -1441,9 +1441,6 @@ void loop () {
     // Evaluate are here because we want it to be synchronized with the processFlightControl
     #if defined AltitudeHoldBaro
       measureBaroSum(); 
-      if (frameCounter % THROTTLE_ADJUST_TASK_SPEED == 0) {  //  50 Hz tasks
-        evaluateBaroAltitude();
-      }
     #endif
           
     // Combines external pilot commands and measured sensor data to generate motor commands
@@ -1463,8 +1460,13 @@ void loop () {
     // ================================================================
     // 50hz task loop
     // ================================================================
+		
     if (frameCounter % TASK_50HZ == 0) {  //  50 Hz tasks
-
+	#if defined AltitudeHoldBaro
+      if (frameCounter % THROTTLE_ADJUST_TASK_SPEED == 0) {  //  50 Hz tasks
+        evaluateBaroAltitude();
+      }
+    #endif
       G_Dt = (currentTime - fiftyHZpreviousTime) / 1000000.0;
       fiftyHZpreviousTime = currentTime;
 
@@ -1494,96 +1496,102 @@ void loop () {
     // ================================================================
     // 10hz task loop
     // ================================================================
-    if (frameCounter % TASK_10HZ == 0) {  //   10 Hz tasks
+	int step_10HZ = frameCounter % TASK_10HZ;
+	G_Dt = (current_time - tenHZtimes[step_10HZ]) / 1000000.0 ; 
+	
+	switch(step_10HZ)
+	{
+	/* even cases are used by the 50Hz loop */
+	case 1: /* calculate Mag -> rotate mag B field into the horizontal plane */
+		#if defined(HeadingMagHold)
+			calculateMagHeading(kinematicsAngle[XAXIS], kinematicsAngle[YAXIS]);
+		#endif
+		break;
+	
+	case 3: /* Calculate the Heading using DCM */
+	    #if defined(HeadingMagHold)
+      	  G_Dt = (currentTime - tenHZpreviousTime) / 1000000.0;
+      	  tenHZpreviousTime = currentTime;
+		  calculateHeading(gyroRate[XAXIS],
+                           gyroRate[YAXIS],
+                           gyroRate[ZAXIS],
+                           filteredAccel[XAXIS],
+                           filteredAccel[YAXIS],
+                           filteredAccel[ZAXIS],
+                           accelOneG,
+                           getHdgXY(XAXIS),
+                           getHdgXY(YAXIS),
+                           G_Dt);
+	    #endif
+		break;
+	
+	case 5: /* Battery Monitor */
+	 	#if defined(BattMonitor)
+        	measureBatteryVoltage(G_Dt*1000.0);
+      	#endif
 
-      #if defined(HeadingMagHold)
-        G_Dt = (currentTime - tenHZpreviousTime) / 1000000.0;
-        tenHZpreviousTime = currentTime;
-         
+      	// Listen for configuration commands and reports telemetry
+      	readSerialCommand(); // defined in SerialCom.pde
+      	sendSerialTelemetry(); // defined in SerialCom.pde
+		break;
+	
+	case 7:	 /* OSD, LED status */
+	    #ifdef OSD_SYSTEM_MENU
+          updateOSDMenu();
+        #endif
 
- 		calculateMagHeading(kinematicsAngle[XAXIS], kinematicsAngle[YAXIS]);
-        calculateHeading(gyroRate[XAXIS],
-                         gyroRate[YAXIS],
-                         gyroRate[ZAXIS],
-                         filteredAccel[XAXIS],
-                         filteredAccel[YAXIS],
-                         filteredAccel[ZAXIS],
-                         accelOneG,
-                         getHdgXY(XAXIS),
-                         getHdgXY(YAXIS),
-                         G_Dt);
-      #endif
-    }
-    else if ((currentTime - lowPriorityTenHZpreviousTime) > 100000) {
-
-      G_Dt = (currentTime - lowPriorityTenHZpreviousTime) / 1000000.0;
-      lowPriorityTenHZpreviousTime = currentTime;
+        #ifdef MAX7456_OSD
+          updateOSD();
+        #endif
       
-      #if defined(BattMonitor)
-        measureBatteryVoltage(G_Dt*1000.0);
-      #endif
-
-      // Listen for configuration commands and reports telemetry
-      readSerialCommand(); // defined in SerialCom.pde
-      sendSerialTelemetry(); // defined in SerialCom.pde
-    }
-    else if ((currentTime - lowPriorityTenHZpreviousTime2) > 100000) {
+        #if defined (UseGPS) || defined (BattMonitor)
+          processLedStatus();
+        #endif
       
-      G_Dt = (currentTime - lowPriorityTenHZpreviousTime2) / 1000000.0;
-      lowPriorityTenHZpreviousTime2 = currentTime;
-
-      #ifdef OSD_SYSTEM_MENU
-        updateOSDMenu();
-      #endif
-
-      #ifdef MAX7456_OSD
-        updateOSD();
-      #endif
-      
-      #if defined (UseGPS) || defined (BattMonitor)
-        processLedStatus();
-      #endif
-      
-      #ifdef SlowTelemetry
-        updateSlowTelemetry10Hz();
-      #endif
-    }
-    else if (frameCounter % TASK_10HZ == 5) {
-      static uint16_t iterations = 0;
-      static bool got_lt_char = false;
-      
-      while (!got_lt_char && LOG_SERIAL.available()) {
-        char c = LOG_SERIAL.read();
-        Serial.write(c);
-        got_lt_char = c == '<';
-      }
-      while (got_lt_char && LOG_SERIAL.available()) {
-        char c = LOG_SERIAL.read();
-        Serial.write(c);
-      }
-      
-      if (got_lt_char && motorArmed == ON) {
-        LogValueSpace(currentTime);               // 1
-        LogValueSpace(iterations++);              // 2
-        LogValueSpace(altitudeHoldState);         // 3
-        LogValueSpace(getBaroAltitude());         // 4
-        LogValueSpace(baroAltitudeToHoldTarget);  // 5
-        LogValueSpace(receiverCommand[THROTTLE]); // 6
-        LogValueSpace(throttle);                  // 7
-        LogValueSpace(altitudeHoldThrottle);      // 8
-        //LogValueSpace(altitudeHoldThrottleCorrection);
-        LogValueSpace(PID[BARO_ALTITUDE_HOLD_PID_IDX].integratedError);
-        for (byte motor = 0; motor < LASTMOTOR; motor++) {
-          LogValueSpace(motorCommand[motor]);
+        #ifdef SlowTelemetry
+          updateSlowTelemetry10Hz();
+        #endif
+		break;
+	case 9:	/* Log */
+	    static uint16_t iterations = 0;
+        static bool got_lt_char = false;
+        
+        while (!got_lt_char && LOG_SERIAL.available()) {
+          char c = LOG_SERIAL.read();
+          Serial.write(c);
+          got_lt_char = c == '<';
         }
-        LogValueSpace((float)batteryData[0].voltage/100.0);
-
-        LOG_SERIAL.println();
-      }
+        while (got_lt_char && LOG_SERIAL.available()) {
+          char c = LOG_SERIAL.read();
+          Serial.write(c);
+        }
+        
+        if (got_lt_char && motorArmed == ON) {
+          LogValueSpace(currentTime);               // 1
+          LogValueSpace(iterations++);              // 2
+          LogValueSpace(altitudeHoldState);         // 3
+          LogValueSpace(getBaroAltitude());         // 4
+          LogValueSpace(baroAltitudeToHoldTarget);  // 5
+          LogValueSpace(receiverCommand[THROTTLE]); // 6
+          LogValueSpace(throttle);                  // 7
+          LogValueSpace(altitudeHoldThrottle);      // 8
+          //LogValueSpace(altitudeHoldThrottleCorrection);
+          LogValueSpace(PID[BARO_ALTITUDE_HOLD_PID_IDX].integratedError);
+          for (byte motor = 0; motor < LASTMOTOR; motor++) {
+            LogValueSpace(motorCommand[motor]);
+          }
+          LogValueSpace((float)batteryData[0].voltage/100.0);
+        
+          LOG_SERIAL.println();
+        }
+	    	break;
+	    default: /* even numbers */
+	    	break;
+	    }
     }
-
+	tenHZtimes[step_10HZ] = currentTime;
     previousTime = currentTime;
-  }
+  
   
   if (frameCounter >= 100) {
       frameCounter = 0;
