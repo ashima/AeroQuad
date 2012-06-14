@@ -1463,9 +1463,9 @@ void loop () {
 		
     if (frameCounter % TASK_50HZ == 0) {  //  50 Hz tasks
 	#if defined AltitudeHoldBaro
-      if (frameCounter % THROTTLE_ADJUST_TASK_SPEED == 0) {  //  50 Hz tasks
+//      if (frameCounter % THROTTLE_ADJUST_TASK_SPEED == 0) {  //  50 Hz tasks
         evaluateBaroAltitude();
-      }
+//      }
     #endif
       G_Dt = (currentTime - fiftyHZpreviousTime) / 1000000.0;
       fiftyHZpreviousTime = currentTime;
