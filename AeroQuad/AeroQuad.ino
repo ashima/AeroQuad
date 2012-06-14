@@ -1498,7 +1498,7 @@ void loop () {
     // ================================================================
 	int step_10HZ = frameCounter % TASK_10HZ;
 	G_Dt = (current_time - tenHZtimes[step_10HZ]) / 1000000.0 ; 
-	
+	tenHZtimes[step_10HZ] = currentTime;
 	switch(step_10HZ)
 	{
 	/* even cases are used by the 50Hz loop */
@@ -1510,8 +1510,6 @@ void loop () {
 	
 	case 3: /* Calculate the Heading using DCM */
 	    #if defined(HeadingMagHold)
-      	  G_Dt = (currentTime - tenHZpreviousTime) / 1000000.0;
-      	  tenHZpreviousTime = currentTime;
 		  calculateHeading(gyroRate[XAXIS],
                            gyroRate[YAXIS],
                            gyroRate[ZAXIS],
@@ -1589,7 +1587,6 @@ void loop () {
 	    	break;
 	    }
     }
-	tenHZtimes[step_10HZ] = currentTime;
     previousTime = currentTime;
   
   
