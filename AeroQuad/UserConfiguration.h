@@ -46,10 +46,10 @@
  *********************** Define Flight Configuration ************************
  ****************************************************************************/
 // Use only one of the following definitions
-//#define quadXConfig
+#define quadXConfig
 //#define quadPlusConfig
 //#define hexPlusConfig
-#define hexXConfig      // EXPERIMENTAL: not completely re-tested
+//#define hexXConfig      
 //#define triConfig
 //#define quadY4Config
 //#define hexY6Config
@@ -57,7 +57,12 @@
 //#define octoPlusConfig  // EXPERIMENTAL: not completely re-tested
 //#define octoXConfig     // EXPERIMENTAL: not completely re-tested
 
+
+// MOTOR ADVANCE CONFIG SECTION
 //#define CHANGE_YAW_DIRECTION // if you want to reverse the yaw correction direction
+
+//#define USE_400HZ_ESC // For ESC that support 400Hz update rate, ESC OR PLATFORM MAY NOT SUPPORT IT
+
 
 //
 // +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -106,7 +111,7 @@
 //#define ReceiverHWPPM // Use a ppm receiver with HW timer, needs a HW modification (see Libraries/AQ_Receiver/Receiver_HWPPM.h)
 // You need to select one of these channel order definitions for PPM receiver
 //#define SKETCH_SERIAL_SUM_PPM SERIAL_SUM_PPM_1 //For Graupner/Spektrum (DEFAULT)
-//#define SKETCH_SERIAL_SUM_PPM SERIAL_SUM_PPM_2 //For Robe/Hitec/Futaba
+#define SKETCH_SERIAL_SUM_PPM SERIAL_SUM_PPM_2 //For Robe/Hitec/Futaba
 //#define SKETCH_SERIAL_SUM_PPM SERIAL_SUM_PPM_3 //For some Hitec/Sanwa/Others
 
 //#define UseRSSIFaileSafe // read rssi for receiver failsafe NEED A RECEIVER WITH FAILSAVE CONNECTED ON PIN A6 OF THE SHIELD

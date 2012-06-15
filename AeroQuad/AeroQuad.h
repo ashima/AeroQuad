@@ -28,7 +28,7 @@
 #include "pins_arduino.h"
 #include "GpsDataType.h"
 #include "AQMath.h"
-#include "receiver.h"
+#include "Receiver.h"
 
 // Flight Software Version
 #define SOFTWARE_VERSION 3.1
@@ -52,6 +52,7 @@ float aref; // Read in from EEPROM
 /**
  * Heading and heading hold global declaration section
  */
+ 
 byte  headingHoldConfig   = 0;
 float headingHold         = 0; // calculated adjustment for quad to go to heading (PID output)
 float heading             = 0; // measured heading from yaw gyro (process variable)
@@ -145,6 +146,7 @@ void processHeading();
 //  float previousSensorAltitude = 0.0;
 
   #if defined AltitudeHoldBaro
+    float previousBaroAltitude = 0.0;
     float baroAltitudeToHoldTarget = 0.0;
   #endif  
   #if defined AltitudeHoldRangeFinder
