@@ -260,6 +260,7 @@ void readSerialCommand() {
     case 'I': // Initialize EEPROM with default values
       initializeEEPROM(); // defined in DataStorage.h
       writeEEPROM();
+      storeSensorsZeroToEEPROM();
       calibrateGyro();
       computeAccelBias();
       zeroIntegralError();
@@ -285,6 +286,7 @@ void readSerialCommand() {
       accelScaleFactor[ZAXIS] = readFloatSerial();
       runTimeAccelBias[ZAXIS] = readFloatSerial();
       writeEEPROM();
+      storeSensorsZeroToEEPROM();
       break;
       
     case 'L': // generate accel bias
@@ -858,9 +860,9 @@ void sendSerialTelemetry() {
       SERIAL_PRINTLN();
       queryType = 'X';
     #else
-      for (byte values=0; values < 9; values++)
-        PrintValueComma(0);//all values have trailing commas
-      SERIAL_PRINTLN();
+      for (byte values=0; values < 8; values++)
+        PrintValueComma(0);
+      SERIAL_PRINTLN(0);
     #endif
     queryType = 'X';
     break;
