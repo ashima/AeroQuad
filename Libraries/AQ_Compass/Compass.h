@@ -35,6 +35,7 @@ float rawMag[3] = {0.0,0.0,0.0};
 float rawMagSum[3] = {0.0,0.0,0.0};
 float magBias[3] = {0.0,0.0,0.0};
 int nsamples = 0 ;
+
 //float magMax[3] = {0.0,0.0,0.0};
 //float magMin[3] = {0.0,0.0,0.0};
 float magScale[3] = {1.0,1.0,1.0};

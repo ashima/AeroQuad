@@ -57,6 +57,7 @@ void initializeMagnetometer() {
   measureMagnetometer(0.0, 0.0);  // Assume 1st measurement at 0 degrees roll and 0 degrees pitch
   calculateMagHeading(0.0, 0.0);  // Assume 1st measurement at 0 degrees roll and 0 degrees pitch
 }
+
 void measureMagnetometer(float roll, float pitch) {
     //do not use roll, pitch here.
   sendByteI2C(COMPASS_ADDRESS, 0x03);
