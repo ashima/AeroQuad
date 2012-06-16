@@ -29,7 +29,8 @@
   #define ITG3200_ADDRESS					0x69
 #endif
 
-#define ITG3200_IDENTITY 0x69
+#define ITG3200_IDENTITY                0x68
+#define ITG3200_IDENTITY_MASK           0x7E
 #define ITG3200_MEMORY_ADDRESS			0x1D
 #define ITG3200_BUFFER_SIZE				6
 #define ITG3200_RESET_ADDRESS			0x3E
@@ -51,8 +52,7 @@ void measureSpecificGyroSum();
 void evaluateSpecificGyroRate(int *gyroADC);
 
 void initializeGyro() {
-
-  if (readWhoI2C(ITG3200_ADDRESS) == ITG3200_IDENTITY) {
+  if ((readWhoI2C(ITG3200_ADDRESS) & ITG3200_IDENTITY_MASK) == ITG3200_IDENTITY) {
 	vehicleState |= GYRO_DETECTED;
   }
 	
@@ -62,8 +62,7 @@ void initializeGyro() {
   updateRegisterI2C(ITG3200_ADDRESS, ITG3200_RESET_ADDRESS, ITG3200_OSCILLATOR_VALUE); // use internal oscillator 
 }
 
-void computeGyroTCBias()
-{
+void computeGyroTCBias() {
   readGyroTemp();
 
   for (byte axis = 0; axis <= ZAXIS; axis++) {
@@ -73,7 +72,6 @@ void computeGyroTCBias()
 
 
 void measureGyro() {
-
   sendByteI2C(ITG3200_ADDRESS, ITG3200_MEMORY_ADDRESS);
   Wire.requestFrom(ITG3200_ADDRESS, ITG3200_BUFFER_SIZE);
 
@@ -95,7 +93,6 @@ void measureGyro() {
 }
 
 void measureGyroSum() {
-
   sendByteI2C(ITG3200_ADDRESS, ITG3200_MEMORY_ADDRESS);
   Wire.requestFrom(ITG3200_ADDRESS, ITG3200_BUFFER_SIZE);
   
@@ -105,14 +102,12 @@ void measureGyroSum() {
 }
 
 void readGyroTemp() {
-
   sendByteI2C(ITG3200_ADDRESS, ITG3200_TEMPERATURE_ADDRESS);
   Wire.requestFrom(ITG3200_ADDRESS, 2);
   gyroTemperature = (readWordI2C() + 13200) / 280 + 35;
 }
 
 void evaluateGyroRate() {
-
   int gyroADC[3];
   evaluateSpecificGyroRate(gyroADC);
   gyroSample[XAXIS] = 0;

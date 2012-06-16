@@ -28,7 +28,7 @@
 #include "pins_arduino.h"
 #include "GpsDataType.h"
 #include "AQMath.h"
-#include "receiver.h"
+#include "Receiver.h"
 
 // Flight Software Version
 #define SOFTWARE_VERSION 3.1
@@ -54,6 +54,7 @@ float aref; // Read in from EEPROM
 /**
  * Heading and heading hold global declaration section
  */
+ 
 byte  headingHoldConfig   = 0;
 float headingHold         = 0; // calculated adjustment for quad to go to heading (PID output)
 float heading             = 0; // measured heading from yaw gyro (process variable)
@@ -105,7 +106,7 @@ int testCommand = 1000;
 byte flightMode = RATE_FLIGHT_MODE;
 unsigned long frameCounter = 0; // main loop executive frame counter
 int minArmedThrottle; // initial value configured by user
-unsigned long tenHZtimes[10]=0;
+unsigned long tenHzTimes[10];
 float G_Dt = 0.002; 
 int throttle = 1000;
 byte motorArmed = OFF;
@@ -147,6 +148,7 @@ void processHeading();
 //  float previousSensorAltitude = 0.0;
 
   #if defined AltitudeHoldBaro
+    float previousBaroAltitude = 0.0;
     float baroAltitudeToHoldTarget = 0.0;
   #endif  
   #if defined AltitudeHoldRangeFinder
@@ -210,15 +212,6 @@ void processHeading();
 /**
  * Serial communication global declaration
  */
-#if defined MultipleSerialTelemetry
-#define SERIAL_PRINT      _ser->print
-#define SERIAL_PRINTLN    _ser->println
-#define SERIAL_AVAILABLE  _ser->available
-#define SERIAL_READ       _ser->read
-#define SERIAL_FLUSH      _ser->flush
-#define SERIAL_BEGIN      _ser->begin
-HardwareSerial * getSerial();
-#else
 #define SERIAL_PRINT      SERIAL_PORT.print
 #define SERIAL_PRINTLN    SERIAL_PORT.println
 #define SERIAL_AVAILABLE  SERIAL_PORT.available
@@ -226,7 +219,6 @@ HardwareSerial * getSerial();
 #define SERIAL_FLUSH      SERIAL_PORT.flush
 #define SERIAL_BEGIN      SERIAL_PORT.begin
  
-#endif
 //HardwareSerial *binaryPort;
 
 void readSerialCommand();
