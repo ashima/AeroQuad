@@ -1583,9 +1583,9 @@ void loop () {
 	    default: /* even numbers */
 	    	break;
 	    }
-    }
+ 
     previousTime = currentTime;
-  
+    }  
   
   if (frameCounter >= 100) {
       frameCounter = 0;
