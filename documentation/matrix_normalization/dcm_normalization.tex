@@ -214,5 +214,81 @@ Given $\cos\phi = -\sin\phi = \frac{1}{\sqrt{2}}$
 	\end{smallmatrix}
 	\end{pmatrix}
 \end{eqnarray}
+\section{Alternate Alternate normalizing method}
+Similar to the last method, but without rotating $\vec{z}$ onto $\vec{k}$. $\vec{x}$ and $\vec{y}$ define a plane, $\vec{z'}=\widehat{\vec{x}\times\vec{y}}$ is normal to that plane. The mean of $\vec{x}$ and $\vec{y}$ is in the plane and 45 degrees from the corrected vectors $\vec{x'}$ and $\vec{y'}$.
+
+The rotation matrix above can also be writen as :
+\begin{equation}
+\matrix{R_\theta} = \cos\theta \matrix{I} + \sin\theta [\vec{u}]_{\times} + (1 - \cos\theta)\vec{u}\otimes\vec{u}
+\end{equation}
+Where $\vec{u}$ is a column vector, $[\vec{u}]_{\times}$ is the cross product matrix, and $\vec{u}\otimes\vec{u}$ is the tensor or outer product matrix:
+
+\begin{equation}
+[\vec{u}]_{\times} = 
+\begin{pmatrix}
+\begin{smallmatrix}
+0 & -u_z & -u_y \\
+u_z & 0 & -u_x \\
+-u_y & u_x & 0
+\end{smallmatrix}
+\end{pmatrix}
+,
+\vec{u}\otimes\vec{u} =
+\vec{u} \vec{u}^T =
+\begin{pmatrix}
+\begin{smallmatrix}
+u_x^2 & u_x u_y & u_x u_z \\
+u_x u_y & u_y^2 & u_y u_z \\
+u_x u_z & u_y u_z & u_z ^2 
+\end{smallmatrix}
+\end{pmatrix}
+\end{equation}
+
+The cosine terms are symetric and the sin term is antisymetric. So the transpose :
+\begin{equation}
+\matrix{R_\theta^T} = \cos\theta \matrix{I} - \sin\theta [\vec{u}]_{\times} + (1 - \cos\theta)\vec{u}\otimes\vec{u}
+\end{equation}
+
+Substituting  $\vec{z'}$ for $\vec{u}$ and using 45 degrees :
+\begin{equation}
+\cos(\frac{\pi}{4})=\sin(\frac{\pi}{4})=\frac{1}{\sqrt{2}}
+\end{equation}
+\begin{equation}
+\matrix{R_{\frac{\pi}{4}}} = \frac{1}{\sqrt{2}} \matrix{I} + \frac{1}{\sqrt{2}} [\vec{z'}]_{\times} + (1 - \frac{1}{\sqrt{2}})(\vec{z'}\otimes\vec{z'})
+\end{equation}
+
+and applying it to $\vec{v} = \widehat{\left( \vec{x} + \vec{y} \right) } $ to get :
+
+\begin{eqnarray}
+\vec{x'} &=& \frac{1}{\sqrt{2}} \vec{v} + \frac{1}{\sqrt{2}} [\vec{z'}]_{\times}\vec{v} + (1 - \frac{1}{\sqrt{2}})(\vec{z'}\otimes\vec{z'})\vec{v} \\
+         &=& \frac{1}{\sqrt{2}} \vec{v} + \frac{1}{\sqrt{2}} (\vec{z'}\times\vec{v}) + \vec{z'} \vec{z'}^T (\vec{v} - \frac{1}{\sqrt{2}}\vec{v})
+\end{eqnarray}
+
+defineing $\vec{v'} =  \frac{1}{\sqrt{2}} \vec{v} $, then the equations for $\vec{x'}$ and $\vec{y'}$ become :
+
+\begin{eqnarray}
+\vec{x'} &=& \vec{v'} + \vec{z'} \vec{z'}^T (\vec{v} - \vec{v'}) + \vec{z'}\times\vec{v'} \\
+\vec{y'} &=& \vec{v'} + \vec{z'} \vec{z'}^T (\vec{v} - \vec{v'}) - \vec{z'}\times\vec{v'} 
+\end{eqnarray}
+writing $\vec{x}$ out in full gives :
+\begin{eqnarray}
+x'_0 &=& v'_0 + z'_0 \left( z'_0 u_0 + z'_1 u_1 + z'_2 u_2 \right )+ z'_1 v'_2 - z'_2 v'_1 \\
+x'_1 &=& v'_1 + z'_1 \left( z'_0 u_0 + z'_1 u_1 + z'_2 u_2 \right )- z'_0 v'_2 + z'_2 v'_0 \\
+x'_2 &=& v'_2 + z'_2 \left( z'_0 u_0 + z'_1 u_1 + z'_2 u_2 \right )+ z'_0 v'_1 - z'_1 v'_0 
+\end{eqnarray}
+The psudocode for this :
+
+\begin{eqnarray}
+\vec{z'} &=& normalize( \vec{x} \times \vec{y} ) \\
+\vec{v}  &=& normalize( \vec{x} + \vec{y} ) \\
+\vec{v'} &=& \frac{1}{\sqrt{2}} \vec{v} \\
+c &=& z' \bullet ( \vec{v} - \vec{v'} ) \\
+\vec{a} &=& \vec{z'} \times \vec{v'} \\
+\vec{b} &=& c \vec{z'} + \vec{v'} \\
+\vec{x'} &=& \vec{b} - \vec{a} \\
+\vec{y'} &=& \vec{b} + \vec{a}
+\end{eqnarray}
+
+Computing values for $\vec{v}$, $\vec{v'}$ and $c$ should be interleaved.
 
 \end{document}

@@ -4,6 +4,7 @@ matrix into a true rotation matrix by finding the normal to the xy plane (the Z 
 
 from numpy import dot, cross, sqrt, array, cos, sin, matrix, deg2rad, random, pi
 from numpy.linalg import det
+import numpy as np
 
 def magnitude(x):
     """returns the 2-norm of the vector complex/real x"""
@@ -25,10 +26,74 @@ def rotation_3d(costheta,sintheta,vec):
                     [uy*ux*omcostheta + uz*sintheta, costheta+uy*uy*omcostheta, uy*uz*omcostheta-ux*sintheta],
                     [uz*ux*omcostheta - uy*sintheta, uz*uy*omcostheta + ux*sintheta, costheta + uz*uz*omcostheta]])
 
+def isrotation(mat):
+    test = True
+    test = test and (np.abs(det(mat)-1) < 1e-5)
+    test = test and (np.abs(dot(mat[0],mat[0].T)-1) < 1e-5)
+    test = test and (np.abs(dot(mat[1],mat[1].T)-1) < 1e-5)
+    test = test and (np.abs(dot(mat[2],mat[2].T)-1) < 1e-5)
+    if type(test) is matrix:
+        return array(test)[0,0]
+    else:
+        return test
 
-def orthogonalize(x,y,z, verbose=False):
+
+def orthogonalize_alt(mat,verbose=False):
+    """Uses Ian's patented method"""
+    x,y,z=array(mat)[0], array(mat)[1], array(mat)[2]
+
+    #calculate znorm as normalized(x .cross. y)
+    zprime = normalize(cross(x,y))
+    
+    #calculate the mean of x+y
+    v = normalize(x+y)
+    
+    #calculate v' = 1./sqrt(2)v
+    isqrt2 = 0.707106781
+    vprime = isqrt2 * v
+
+    #calculate 
+    c = dot(zprime,vprime-v)
+    a = cross(zprime, vprime)
+    b = c*z + vprime
+    x = b - a
+    y = b + a
+    
+    M = matrix([x,y,zprime]).T
+    return dict(zprime=zprime, 
+                v=v, vprime=vprime, c=c,
+                a=a, b=b,
+                x=x,
+                y=y, 
+                M=M)
+         
+def DCM(mat, verbose=False):
+    x,y,z=array(mat)[0], array(mat)[1], array(mat)[2]
+    #calc error
+    error = -dot(x,y)*0.5
+    
+    ny = y+error*x
+    nx = x+error*y
+    
+    #cross product to get z
+    nz = cross(x,y)
+    
+    #approximately normalize
+    renorm = 0.5*(3-dot(nx,nx))
+    nx = nx*renorm
+    renorm = 0.5*(3-dot(ny,ny))
+    ny = ny*renorm
+    renorm = 0.5*(3-dot(nz,nz))
+    nz = nz*renorm
+
+    M = matrix([nx,ny,nz]).T
+
+    return dict(nx=nx, ny=ny, nz=nz, M=M, error=error)
+    
+
+def orthogonalize(mat, verbose=False):
     """Takes a 3d matrix defined by row vectors x,y,z (the three axis of the orientation matrix) and generates a matrix constrained to be a true rotation matrix M, with M^T.M = I, |M| = 1, M_i.M_j = 0 i!=j, M_ixM_j = M_k for i,j,k=1,2,3 or rotational varients of it"""
-
+    x,y,z=array(mat)[0], array(mat)[1], array(mat)[2]
     #1. generate the i,j,k and x,y axes
     ivec = array([1,0,0.])
     jvec = array([0,1,0.])
@@ -76,7 +141,7 @@ def orthogonalize(x,y,z, verbose=False):
         print "y  =", y, magnitude(y)
         print "znorm  =", znorm, magnitude(znorm)
         print "xdot   =", dot(x, y), dot(x, znorm), dot(y, znorm)
-        print "cross  =", cross(xnorm, ynorm), cross(xnorm, znorm), cross(ynorm, znorm)
+#        print "cross  =", cross(xnorm, ynorm), cross(xnorm, znorm), cross(ynorm, znorm)
         print "theta  =", cos_theta, sin_theta, sqrt(1-cos_theta*cos_theta)
         print "psi    =", cos_psi, sin_psi, sqrt(1-cos_psi*cos_psi)
         print "v      =", v, magnitude(v)
@@ -88,11 +153,48 @@ def orthogonalize(x,y,z, verbose=False):
         print "M      =\n", M, det(M)
         
     return dict(kvec=kvec, 
-                xnorm=xnorm, ynorm=ynorm, znorm=znorm,
+                znorm=znorm,
                 cos_theta=cos_theta, sin_theta=sin_theta,
                 czk=czk,
-                f=f, g=g, h=h, R_theta=R_theta, v=v, vprime=vprime,
+                f=f, h=h, R_theta=R_theta, v=v, vprime=vprime,
                 cos_psi=cos_psi, sin_psi=sin_psi, R_psi=R_psi, R_pi4=R_pi4, M=M)
+
+def genRot(noise=0.0, noisefree=False):
+    theta = (np.random.rand()*2-1.)*np.pi
+    vec=normalize(np.random.rand(3)*2-1.0)
+    M=rotation_3d(cos(theta), sin(theta), vec)
+    real=M
+    M=M+np.random.rand(3,3)*noise
+    if noisefree:
+        return M, real
+    else:
+        return M
+
+def testEmpty(noise=0.0):
+    M=genRot(noise=noise)
+    #r = orthogonalize(M)
+    #q = orthogonalize_alt(M)
+    return None
+
+def testOrthoMatrix(noise=0.0):
+    M=genRot(noise=noise)
+    r = orthogonalize(M)
+    #q = orthogonalize_alt(M)
+    return r
+    
+def testOrthoIan(noise=0.0):
+    M=genRot(noise=noise)
+    M=M+np.random.rand(3,3)*0.1
+    #r = orthogonalize(M)
+    q = orthogonalize_alt(M)
+    return q
+
+def testDCM(noise=0.0):
+    M=genRot(noise=noise)
+    M=M+np.random.rand(3,3)*0.1
+    #r = orthogonalize(M)
+    s = DCM(M)
+    return s
 
 if __name__=="__main__":
     import sys
