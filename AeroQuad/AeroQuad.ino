@@ -1570,23 +1570,20 @@ void loop () {
         }
         
         if (1==1){ //got_lt_char && motorArmed == ON) {
-//          LogValueSpace(currentTime);               // 1
-//          LogValueSpace(iterations++);              // 2
-//          LogValueSpace(altitudeHoldState);         // 3
-//          LogValueSpace(getBaroAltitude());         // 4
-//          LogValueSpace(baroAltitudeToHoldTarget);  // 5
-//          LogValueSpace(receiverCommand[THROTTLE]); // 6
-//          LogValueSpace(throttle);                  // 7
-//          LogValueSpace(altitudeHoldThrottle);      // 8
-          //LogValueSpace(altitudeHoldThrottleCorrection);
-//          LogValueSpace(PID[BARO_ALTITUDE_HOLD_PID_IDX].integratedError);
-//          for (byte motor = 0; motor < LASTMOTOR; motor++) {
-//            LogValueSpace(motorCommand[motor]);
-//          }
-//          LogValueSpace((float)batteryData[0].voltage/100.0);
-          for (byte motor = 0; motor < 16; motor++) {
-            LogValueSpace((double)1);
+          LogValueSpace(currentTime);               // 1
+          LogValueSpace(iterations++);              // 2
+          LogValueSpace(altitudeHoldState);         // 3
+          LogValueSpace((long)(100.*getBaroAltitude()));         // 4
+          LogValueSpace((long)(100.*baroAltitudeToHoldTarget));  // 5
+          LogValueSpace(receiverCommand[THROTTLE]); // 6
+          LogValueSpace(throttle);                  // 7
+          LogValueSpace(altitudeHoldThrottle);      // 8
+        //LogValueSpace(altitudeHoldThrottleCorrection);
+          LogValueSpace((long)(1e3*PID[BARO_ALTITUDE_HOLD_PID_IDX].integratedError));
+          for (byte motor = 0; motor < LASTMOTOR; motor++) {
+            LogValueSpace(motorCommand[motor]);
           }
+          LogValueSpace((long)batteryData[0].voltage);
         
           LOG_SERIAL.println();
         }
