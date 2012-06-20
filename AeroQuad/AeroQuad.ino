@@ -1458,6 +1458,7 @@ void loop () {
     #ifdef SlowTelemetry
       updateSlowTelemetry100Hz();
     #endif
+   	cbi(PORTA,PA0);
 
     // ================================================================
     // 50hz task loop
@@ -1503,7 +1504,6 @@ void loop () {
 	int step_10HZ = frameCounter % TASK_10HZ;
 	G_Dt = (currentTime - tenHzTimes[step_10HZ]) / 1000000.0 ; 
 	tenHzTimes[step_10HZ] = currentTime;
-	step_10HZ=9;
 	switch(step_10HZ)
 	{
 	/* even cases are used by the 50Hz loop */
@@ -1593,7 +1593,6 @@ void loop () {
 	    }
  
     previousTime = currentTime;
-   	cbi(PORTA,PA0);
 	cbi(PORTA,PA2);
     }  
 

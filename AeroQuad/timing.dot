@@ -1,0 +1,69 @@
+digraph{
+node[shape="box"]
+"100Hz" ->  "evaluategyrorate"
+"100Hz" ->  "evaluatemeterssec"
+"100Hz" ->  "filteredAccelLoop"
+"100Hz" ->  "CalculateKinematics"
+"100Hz" ->  "MeasureMagnetometer"
+"100Hz" ->  "BaroAltHold"
+"100Hz" ->  "measureBaroSum"
+"100Hz" ->  "processflightcontrol"
+"100Hz" ->  "slowTelemetry"
+"100Hz" -> "measureCriticalSensors"
+"measureCriticalSensors" -> "measureGyroSum"
+"measureCriticalSensors" -> "measureAccelSum"
+"all50Hz" -> "50Hz"
+"all50Hz" -> "evaluateBaroHold"
+"50Hz"-> "readPilotCommand"
+"50Hz"-> "UpdateRangeFinder"
+
+
+"10Hz"->"10HzEven"
+"10Hz"->"10HzOdd"
+"10HzOdd"->"10Hz1"
+"10HzOdd"->"10Hz3"
+"10HzOdd"->"10Hz5"
+"10HzOdd"->"10Hz7"
+"10HzOdd"->"10Hz9"
+
+"10Hz1"->"CalculateMagHeading"
+"10Hz3"->"CalculateHeading"
+"10Hz5"->"serial (nothing)"
+"10Hz7"->"updateOSDmenu"
+"10Hz7"->"updateOSD"
+"10Hz9"->"10HzLog"
+
+
+"measureCriticalSensors"[label="measureCriticalSensors (0.694 ms)"]
+"measureGyroSum"[label= "measureGyroSum (0.353 ms)"]
+"measureAccelSum"[label= "measureAccelSum (0.353 ms)"]
+
+"100Hz"[label = "100Hz (5.25 ms)"]
+"evaluategyrorate"[label="evaluategyrorate (0.57 ms)"]
+"evaluatemeterssec"[label="evaluatemeterssec (0.230 ms)"]
+"filteredAccelLoop"[label="filteredAccelLoop (0.486 ms)"]
+"CalculateKinematics"[label="CalculateKinematics (0.895 ms)"]
+"MeasureMagnetometer"[label="Measure mag (0.5 ms)"]
+"BaroAltHold"[label="BaroAltHold (0.882 ms)"]
+"evaluateBaroHold"[label = "evaluateBaroHold (0.019 ms)"]
+"measureBaroSum"[label = "measureBaroSum (0.377 ms)"]
+"processflightcontrol"[label = "processflightcontrol (0.5 ms)"]
+"slowTelemetry"[label = "slowTelemetry (0.011 ms)"]
+"all50Hz"[label="everything at 50Hz (0.65 ms)"]
+"50Hz"[label="50Hz loop (0.61 ms)"]
+"readPilotCommand"[label="readPilotCommand (0.569 ms)"]
+"UpdateRangeFinder"[label="UpdateRangeFinder (no sonar) (0.075 ms)"]
+"10Hz"[label="10Hz loop (4 ms)"]
+"CalculateMagHeading"[label="CalculateMagheading (0.026ms)"]
+"CalculateHeading"[label="CalculateHeading (1.821 ms)"]
+"10HzEven"[label="10Hz Even steps (0.05ms)"]
+"10Hz1"[label="10Hz step 1 (0.9ms)"]
+"10Hz3"[label="10Hz step 3 (2.2ms)"]
+"10Hz5"[label="10Hz step 5 (0.3ms)"]
+"10Hz7"[label="10Hz step 5 (0.05ms)"]
+"10Hz9"[label="10Hz step 5 (5.4ms Logging, 0.05 not Logging)"]
+"serial (nothing)"[label="serial (do nothing) (0.018 ms)"]
+"updateOSDmenu"[label="updateOSDmenu (0.015 ms)"]
+"updateOSD"[label="updateOSD (0.415 ms)"]
+"10HzLog"[label="10Hz Logging to OpenLog(5.4ms)"]
+}
