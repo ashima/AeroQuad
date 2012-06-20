@@ -1408,14 +1408,13 @@ void loop () {
   currentTime = micros();
   deltaTime = currentTime - previousTime;
 
-  	sbi(PORTA,PA2);
 	sbi(PORTA,PA3);
   // ================================================================
   // 100hz task loop
   // ================================================================
   if (deltaTime >= 10000) {
 	sbi(PORTA,PA0);
-	sbi(PORTA,PA1);
+
 
 
     frameCounter++;
@@ -1463,8 +1462,9 @@ void loop () {
     // ================================================================
     // 50hz task loop
     // ================================================================
-		
     if (frameCounter % TASK_50HZ == 0) {  //  50 Hz tasks
+	sbi(PORTA,PA1);	
+
 	#if defined AltitudeHoldBaro
 //      if (frameCounter % THROTTLE_ADJUST_TASK_SPEED == 0) {  //  50 Hz tasks
         evaluateBaroAltitude();
@@ -1494,14 +1494,16 @@ void loop () {
       #if defined(CameraControl)
         moveCamera(kinematicsAngle[YAXIS],kinematicsAngle[XAXIS],kinematicsAngle[ZAXIS]);
       #endif
+	cbi(PORTA,PA1);
     }
-
     // ================================================================
     // 10hz task loop
     // ================================================================
+   	sbi(PORTA,PA2);
 	int step_10HZ = frameCounter % TASK_10HZ;
 	G_Dt = (currentTime - tenHzTimes[step_10HZ]) / 1000000.0 ; 
 	tenHzTimes[step_10HZ] = currentTime;
+	step_10HZ=0;
 	switch(step_10HZ)
 	{
 	/* even cases are used by the 50Hz loop */
@@ -1592,9 +1594,9 @@ void loop () {
  
     previousTime = currentTime;
    	cbi(PORTA,PA0);
-	cbi(PORTA,PA1);
-    }  
 	cbi(PORTA,PA2);
+    }  
+
 	cbi(PORTA,PA3);
   
   if (frameCounter >= 100) {
