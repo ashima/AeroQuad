@@ -1569,7 +1569,7 @@ void loop () {
           Serial.write(c);
         }
         
-        if (1==1){ //got_lt_char && motorArmed == ON) {
+        if (got_lt_char && motorArmed == ON) {
           LogValueSpace(currentTime);               // 1
           LogValueSpace(iterations++);              // 2
           LogValueSpace(altitudeHoldState);         // 3
