@@ -1585,7 +1585,7 @@ void loop () {
 //          }
 //          LogValueSpace((float)batteryData[0].voltage/100.0);
           for (byte motor = 0; motor < 16; motor++) {
-            LogValueSpace('a');
+            LogValueSpace(1);
           }
         
           LOG_SERIAL.println();
