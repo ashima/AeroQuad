@@ -1504,7 +1504,7 @@ void loop () {
 	int step_10HZ = frameCounter % TASK_10HZ;
 	G_Dt = (currentTime - tenHzTimes[step_10HZ]) / 1000000.0 ; 
 	tenHzTimes[step_10HZ] = currentTime;
-	step_10HZ = 3;
+	step_10HZ = 5;
 	switch(step_10HZ)
 	{
 	/* even cases are used by the 50Hz loop */
