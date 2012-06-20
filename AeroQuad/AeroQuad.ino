@@ -1570,7 +1570,7 @@ void loop () {
         }
         
         if (1==1){ //got_lt_char && motorArmed == ON) {
-          LogValueSpace(currentTime);               // 1
+//          LogValueSpace(currentTime);               // 1
 //          LogValueSpace(iterations++);              // 2
 //          LogValueSpace(altitudeHoldState);         // 3
 //          LogValueSpace(getBaroAltitude());         // 4
@@ -1584,6 +1584,9 @@ void loop () {
 //            LogValueSpace(motorCommand[motor]);
 //          }
 //          LogValueSpace((float)batteryData[0].voltage/100.0);
+          for (byte motor = 0; motor < LASTMOTOR+10; motor++) {
+            LogValueSpace('a');
+          }
         
           LOG_SERIAL.println();
         }
