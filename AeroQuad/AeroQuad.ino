@@ -25,7 +25,8 @@
    If you need additional assistance go to http://www.aeroquad.com/forum.php
    or talk to us live on IRC #aeroquad
 *****************************************************************************/
-
+#define ASHIMA_DEBUG 1
+#include "MultiTimer_Interface.h"
 #include "UserConfiguration.h" // Edit this file first before uploading to the AeroQuad
 
 #define LOG_BAUD 115200
@@ -1374,6 +1375,7 @@ void setup() {
   previousTime = micros();
   digitalWrite(LED_Green, HIGH);
   safetyCheck = 0;
+  DDRA=0xFF;
 }
 
 template<typename t>
@@ -1406,12 +1408,16 @@ void loop () {
   currentTime = micros();
   deltaTime = currentTime - previousTime;
 
-  
+  	sbi(PORTA,PA2);
+	sbi(PORTA,PA3);
   // ================================================================
   // 100hz task loop
   // ================================================================
   if (deltaTime >= 10000) {
-  
+	sbi(PORTA,PA0);
+	sbi(PORTA,PA1);
+
+
     frameCounter++;
     measureCriticalSensors();
     
@@ -1585,7 +1591,11 @@ void loop () {
 	    }
  
     previousTime = currentTime;
+   	cbi(PORTA,PA0);
+	cbi(PORTA,PA1);
     }  
+	cbi(PORTA,PA2);
+	cbi(PORTA,PA3);
   
   if (frameCounter >= 100) {
       frameCounter = 0;
