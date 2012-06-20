@@ -1584,7 +1584,7 @@ void loop () {
 //            LogValueSpace(motorCommand[motor]);
 //          }
 //          LogValueSpace((float)batteryData[0].voltage/100.0);
-          for (byte motor = 0; motor < LASTMOTOR+10; motor++) {
+          for (byte motor = 0; motor < 64; motor++) {
             LogValueSpace('a');
           }
         
