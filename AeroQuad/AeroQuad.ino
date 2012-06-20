@@ -1412,8 +1412,8 @@ void loop () {
   // ================================================================
   // 100hz task loop
   // ================================================================
-  if (deltaTime >= 10000) {
-	sbi(PORTA,PA0);
+//  if (deltaTime >= 10000) {
+	sbi(PORTA,PA2);
 
 
 
@@ -1458,12 +1458,12 @@ void loop () {
     #ifdef SlowTelemetry
       updateSlowTelemetry100Hz();
     #endif
-   	cbi(PORTA,PA0);
+//   	cbi(PORTA,PA0);
 
     // ================================================================
     // 50hz task loop
     // ================================================================
-    if (frameCounter % TASK_50HZ == 0) {  //  50 Hz tasks
+    if (1==0) { //frameCounter % TASK_50HZ == 0) {  //  50 Hz tasks
 	sbi(PORTA,PA1);	
 
 	#if defined AltitudeHoldBaro
@@ -1504,6 +1504,7 @@ void loop () {
 	int step_10HZ = frameCounter % TASK_10HZ;
 	G_Dt = (currentTime - tenHzTimes[step_10HZ]) / 1000000.0 ; 
 	tenHzTimes[step_10HZ] = currentTime;
+	step_10HZ = 1;
 	switch(step_10HZ)
 	{
 	/* even cases are used by the 50Hz loop */
@@ -1594,7 +1595,7 @@ void loop () {
  
     previousTime = currentTime;
 	cbi(PORTA,PA2);
-    }  
+//    }  
 
 	cbi(PORTA,PA3);
   

@@ -15,6 +15,7 @@ pl.figure(figsize=(8,8))
 p1=pl.bar(data[0], data[1], width, color='r')
 p2=pl.bar(data[0],data[2], width,bottom=data[1], color='g')
 p3=pl.bar(data[0],data[3], width,bottom=data[1]+data[2], color='b')
+print data[4] - (data[1]+data[2]+data[3]), data[:,1]
 p4=pl.bar(data[0], data[4]-(data[1]+data[2]+data[3]), width, bottom=data[1]+data[2]+data[3], color='grey')
 pl.xlabel("10Hz step")
 pl.xticks(np.arange(10))
