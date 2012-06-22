@@ -117,8 +117,8 @@
 // Please note that the flight software currently only supports 6 channels, additional channels will be supported in the future
 // Additionally 8 receiver channels are only available when not using the Arduino Uno
 // *******************************************************************************************************************************
-//#define LASTCHANNEL 6
-#define LASTCHANNEL 8 // - warning, this needs to be debugged, incorrect COM behaviour appears when selecting this
+#define LASTCHANNEL 6
+//#define LASTCHANNEL 8 // - warning, this needs to be debugged, incorrect COM behaviour appears when selecting this
 
 
 //
