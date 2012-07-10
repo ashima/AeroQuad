@@ -28,20 +28,11 @@
 #define _AQ_ALTITUDE_CONTROL_PROCESSOR_H_
 
 
-//      float zVelocity = (filteredAccel[ZAXIS] * (1 - accelOneG * invSqrt(isq(filteredAccel[XAXIS]) + isq(filteredAccel[YAXIS]) + isq(filteredAccel[ZAXIS])))) - runTimeAccelBias[ZAXIS];
-//      float estimatedSensorAltitude = previousSensorAltitude - zVelocity;
-//      float estimatedCurrentAltitude = (estimatedSensorAltitude + currentSensorAltitude) / 2;
-//      previousSensorAltitude = currentSensorAltitude;
-      // compute throttle z dampening
-//      int zDampeningThrottleCorrection = -updatePID(0.0, estimatedZVelocity, &PID[ZDAMPENING_PID_IDX]);
-//      zDampeningThrottleCorrection = constrain(zDampeningThrottleCorrection, minThrottleAdjust*0.8, maxThrottleAdjust*0.8);
-
-
 #if defined AltitudeHoldBaro || defined AltitudeHoldRangeFinder
 
 #define INVALID_THROTTLE_CORRECTION -1000
-
 #define ALTITUDE_BUMP_SPEED 0.01
+
 
 /**
  * processAltitudeHold
