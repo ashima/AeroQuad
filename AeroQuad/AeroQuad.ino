@@ -36,10 +36,6 @@
 // Define Security Checks
 //
 
-//
-// In order to use the DIYDrone libraries, this have to be declared here this way
-// @see Kenny9999 for details
-//
 #if defined(UseGPS_NMEA) || defined(UseGPS_UBLOX) || defined(UseGPS_MTK) || defined(UseGPS_406)
  #define UseGPS
 #endif 
@@ -56,6 +52,10 @@
   #error "Receiver SWBUS and SlowTelemetry are in conflict for Seria2, they can't be used together"
 #endif
 
+//
+// In order to use the DIYDrone libraries, this have to be declared here this way
+// @see Kenny9999 for details
+//
 #if defined UseGPS
   // needed here to use DIYDrone GPS libraries
   #include <FastSerial.h>
@@ -1249,7 +1249,7 @@ HardwareSerial * getSerial()
 
 /**
  * Main setup function, called one time at bootup
- * initalize all system and sub system of the 
+ * initialize all system and sub system of the
  * Aeroquad
  */
 void setup() {
@@ -1408,10 +1408,10 @@ void loop () {
 
   
   // ================================================================
-  // 100hz task loop
+  // 100Hz task loop
   // ================================================================
   if (deltaTime >= 10000) {
-  
+    
     frameCounter++;
     measureCriticalSensors();
     
@@ -1455,9 +1455,8 @@ void loop () {
     #endif
 
     // ================================================================
-    // 50hz task loop
+    // 50Hz task loop
     // ================================================================
-		
     if (frameCounter % TASK_50HZ == 0) {  //  50 Hz tasks
 	#if defined AltitudeHoldBaro
 //      if (frameCounter % THROTTLE_ADJUST_TASK_SPEED == 0) {  //  50 Hz tasks
@@ -1491,7 +1490,7 @@ void loop () {
     }
 
     // ================================================================
-    // 10hz task loop
+    // 10Hz task loop
     // ================================================================
 	int step_10HZ = frameCounter % TASK_10HZ;
 	G_Dt = (currentTime - tenHzTimes[step_10HZ]) / 1000000.0 ; 
@@ -1585,7 +1584,7 @@ void loop () {
 	    }
  
     previousTime = currentTime;
-    }  
+  }
   
   if (frameCounter >= 100) {
       frameCounter = 0;
