@@ -31,6 +31,9 @@
 
 char queryType = 'X';
 
+void initCommunication() {
+  // do nothing here for now
+}
 
 //***************************************************************************************************
 //********************************** Serial Commands ************************************************
@@ -53,7 +56,7 @@ void readSerialPID(unsigned char PIDid) {
   pid->P = readFloatSerial();
   pid->I = readFloatSerial();
   pid->D = readFloatSerial();
-  pid->lastPosition = 0;
+//  pid->lastError = 0;
   pid->integratedError = 0;
 }
 
