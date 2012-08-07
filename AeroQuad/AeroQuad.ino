@@ -1467,7 +1467,7 @@ void loop () {
       fiftyHZpreviousTime = currentTime;
 
       // Reads external pilot commands and performs functions based on stick configuration
-      readPilotCommands(); 
+      readPilotCommands(trueNorthHeading); 
       
       #if defined (UseRSSIFaileSafe) 
         readRSSI();

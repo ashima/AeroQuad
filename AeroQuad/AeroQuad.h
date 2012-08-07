@@ -97,13 +97,19 @@ int testCommand = 1000;
 #define RATE_FLIGHT_MODE 0
 #define ATTITUDE_FLIGHT_MODE 1
 
+#define TRUE_NORTH_MODE 2
+#define QUAD_RELATIVE_MODE 3
+
+
 #define TASK_100HZ 1
 #define TASK_50HZ 2
 #define TASK_10HZ 10
 #define TASK_1HZ 100
 #define THROTTLE_ADJUST_TASK_SPEED TASK_50HZ
 
-byte flightMode = RATE_FLIGHT_MODE;
+byte flightMode = ATTITUDE_FLIGHT_MODE ; // RATE_FLIGHT_MODE;
+byte quadRelativeMode = QUAD_RELATIVE_MODE;
+
 unsigned long frameCounter = 0; // main loop executive frame counter
 int minArmedThrottle; // initial value configured by user
 unsigned long tenHzTimes[10];

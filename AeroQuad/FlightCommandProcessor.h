@@ -31,9 +31,17 @@
  * This function is responsible to read receiver
  * and process command from the users
  */
-void readPilotCommands() {
+void readPilotCommands(float trueNorthHeading) {
   
   readReceiver(); 
+   //Check Mode switch for TrueNorth or QuadRelative
+  if (receiverCommand[MODE] > 1500) {
+    quadRelativeMode = QUAD_RELATIVE_MODE;
+    rotateRollPitchToEastNorth(trueNorthHeading);
+  }
+  else {
+    quadRelativeMode = TRUE_NORTH_MODE;
+  }
   if (receiverCommand[THROTTLE] < MINCHECK) {
     zeroIntegralError();
     // Disarm motors (left stick lower left corner)
@@ -88,16 +96,14 @@ void readPilotCommands() {
       safetyCheck = ON; 
     }
   }
-  
+  //OVERRIDE RATE MODE
   // Check Mode switch for Acro or Stable
-  if (receiverCommand[MODE] > 1500) {
-    flightMode = ATTITUDE_FLIGHT_MODE;
-  }
-  else {
-    flightMode = RATE_FLIGHT_MODE;
-  }
-
-  
+  //if (receiverCommand[MODE] > 1500) {
+  //  flightMode = ATTITUDE_FLIGHT_MODE;
+  //}
+  //else {
+  //  flightMode = RATE_FLIGHT_MODE;
+  //}
   #if defined AltitudeHoldBaro || defined AltitudeHoldRangeFinder
     #if defined (UseGPSNavigator)
       if ((receiverCommand[AUX1] < 1750) || (receiverCommand[AUX2] < 1750)) {
@@ -231,3 +237,4 @@ void readPilotCommands() {
 }
 
 #endif // _AQ_FLIGHT_COMMAND_READER_
+

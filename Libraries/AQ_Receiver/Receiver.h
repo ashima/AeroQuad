@@ -82,7 +82,8 @@ void initializeReceiverParam(int nbChannel = 6) {
   
 int getRawChannelValue(byte channel);  
 void readReceiver();
-  
+void rotateRollPitchToEastNorth(float trueNorthHeading);
+
 void readReceiver()
 {
   for(byte channel = XAXIS; channel < lastReceiverChannel; channel++) {
@@ -101,6 +102,34 @@ void readReceiver()
   for (byte channel = THROTTLE; channel < lastReceiverChannel; channel++) {
     receiverCommand[channel] = receiverCommandSmooth[channel];
   }
+  
+}
+
+void rotateRollPitchToEastNorth(float trueNorthHeading)
+{
+//Take the receiver command for roll and pitch to be directions along the west-east and south-north axes, respectively.
+//To do this, rotate the roll and pitch receiver commands using the stored compass heading. 
+//Assuming the magnetometer lines up with the Quad, then Quad-Pitch is aligned with North=0, so to make Quad-Pitch be North-Pitch 
+
+//quad pitch
+//If we face north and pitch up, go North (cos(angle))
+//if we face north and roll up, go East (sin(angle))
+
+//quad roll
+//if we face east and pitch up, go North (-sin(angle))
+//if we face east and roll up, go East (cos(angle))
+
+//if (quadRelativeMode == TRUE_NORTH_MODE) { 
+	float rollCommand = receiverCommand[XAXIS] - receiverZero[XAXIS];
+	float pitchCommand = receiverCommand[YAXIS] - receiverZero[YAXIS];
+
+	float sinAngle = sin(trueNorthHeading);
+	float cosAngle = cos(trueNorthHeading);
+
+	receiverCommand[XAXIS] = receiverZero[XAXIS] + (-pitchCommand * sinAngle) + rollCommand * cosAngle;
+	receiverCommand[YAXIS] = receiverZero[YAXIS] + pitchCommand * cosAngle + rollCommand * sinAngle;
+//}
+
 }
 
 
