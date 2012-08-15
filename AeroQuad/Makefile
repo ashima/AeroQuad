@@ -239,7 +239,7 @@ build: elf hex
 #	$(AVR_UTILS_PATH)/test -d applet || mkdir applet
 #	$(CXX) -c $(ALL_CXXFLAGS) main.cpp -o applet/main.
 
-applet/main.o: 
+applet/main.o: AeroQuad.ino
 	test -d applet || mkdir applet
 	echo '#include "Arduino.h"' > applet/main.cpp
 	cat AeroQuad.ino >> applet/main.cpp

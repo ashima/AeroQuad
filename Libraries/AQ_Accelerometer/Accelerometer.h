@@ -26,6 +26,7 @@
 
 #define SAMPLECOUNT 400.0
 
+int accelRaw[3];
 float accelScaleFactor[3] = {0.0,0.0,0.0};
 float runTimeAccelBias[3] = {0, 0, 0};
 float accelOneG = 0.0;

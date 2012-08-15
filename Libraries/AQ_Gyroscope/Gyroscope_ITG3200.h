@@ -27,9 +27,9 @@
 
 void measureSpecificGyroADC(int *gyroADC) {
   // NOTE: X and Y are inverted, but this function is not used for #define AeroQuadMega_v2
-  gyroADC[XAXIS] = gyroZero[XAXIS] - readShortI2C();
-  gyroADC[YAXIS] = readShortI2C()  - gyroZero[YAXIS];
-  gyroADC[ZAXIS] = gyroZero[ZAXIS] - readShortI2C();
+  gyroRaw[XAXIS] = gyroADC[XAXIS] = gyroZero[XAXIS] - readShortI2C();
+  gyroRaw[YAXIS] = gyroADC[YAXIS] = readShortI2C()  - gyroZero[YAXIS];
+  gyroRaw[ZAXIS] = gyroADC[ZAXIS] = gyroZero[ZAXIS] - readShortI2C();
 }
 
 void measureSpecificGyroSum() {

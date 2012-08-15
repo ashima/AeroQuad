@@ -26,6 +26,7 @@
 
 #define FINDZERO 49
 
+int gyroRaw[3];
 float gyroRate[3] = {0.0,0.0,0.0};
 int   gyroZero[3] = {0,0,0};
 long  gyroSample[3] = {0,0,0};

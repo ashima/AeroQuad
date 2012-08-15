@@ -42,9 +42,10 @@ void readSpecificMag(float *rawMag) {
     // JI - 11/24/11 - Sparkfun 5883L Breakout Board Upside Down on v2p0 shield
     // JI - 11/24/11 - 5883L is upside down, X axis points forward
     // JI - 11/24/11 - 5883L Sensor Orientation 5
-    rawMag[XAXIS] = readShortI2C();
-    rawMag[ZAXIS] = readShortI2C();
-    rawMag[YAXIS] = readShortI2C();
+    //// LAB: WHY IS rawMAG A FLOAT???
+    rawMag[XAXIS] = i_rawMag[XAXIS] = readShortI2C();
+    rawMag[ZAXIS] = i_rawMag[YAXIS] = readShortI2C();
+    rawMag[YAXIS] = i_rawMag[ZAXIS] = readShortI2C();
   #elif defined(AutonavShield_5883L)
     rawMag[XAXIS] =   readShortI2C();
     rawMag[ZAXIS] =  -readShortI2C();

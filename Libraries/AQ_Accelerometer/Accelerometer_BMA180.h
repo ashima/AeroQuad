@@ -85,7 +85,8 @@ void measureAccel() {
   Wire.requestFrom(BMA180_ADDRESS, BMA180_BUFFER_SIZE);
   
   for (byte axis = XAXIS; axis <= ZAXIS; axis++) {
-    meterPerSecSec[axis] = (readReverseShortI2C() >> 2) * accelScaleFactor[axis] + runTimeAccelBias[axis];
+    accelRaw[axis] = readReverseShortI2C() >> 2;
+    meterPerSecSec[axis] = accelRaw[axis] * accelScaleFactor[axis] + runTimeAccelBias[axis];
   }  
 }
 

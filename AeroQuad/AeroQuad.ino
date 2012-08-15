@@ -1,3 +1,4 @@
+#include "wiring_private.h"
 /*
   AeroQuad v3.0.1 - February 2012
   www.AeroQuad.com
@@ -438,8 +439,8 @@
    * Measure critical sensors
    */
   void measureCriticalSensors() {
-    measureGyroSum();
-    measureAccelSum();
+    measureGyro();
+    measureAccel();
   }
 #endif
 
@@ -1374,13 +1375,44 @@ void setup() {
   previousTime = micros();
   digitalWrite(LED_Green, HIGH);
   safetyCheck = 0;
+
+  // set up a 10Hz timer for sensor measurements
+  TCCR1A = 0; // Arduino code screws with this and I wasted an hour remembering it; ARGH
+  TCCR1B = (1 << WGM12)| // CTC mode 
+           (1 << CS11) | (1 << CS10); // Fcpu/64
+  OCR1A = 2500; // 100Hz at 16MHz AVR clock, with a prescaler of 64 
+  TIMSK1 = (1 << OCIE1A); // interrupt on OCR1A 
+  
+  DDRA = 0xFF;
 }
 
-template<typename t>
-void LogValueSpace(t v) {
-  LOG_SERIAL.print(v);
-  LOG_SERIAL.print(' ');
+template<typename T>
+void log(T v) {
+  byte *p = (uint8_t*)&v;
+
+  for (uint8_t i = sizeof(T); i > 0; i--)
+    LOG_SERIAL.write(*p++);
 }
+
+uint16_t _parity;
+
+template<typename T>
+void log_with_parity(T v) {
+  byte *p = (uint8_t*)&v;
+
+  for (uint8_t i = sizeof(T); i > 0; i--) {
+    _parity += *p;
+    LOG_SERIAL.write(*p++);
+  }
+}
+
+void log_start() {
+  log(_parity);
+  LOG_SERIAL.write(0x12);
+  LOG_SERIAL.write(0x34);
+  _parity = 0;
+}
+
 /*******************************************************************
   // tasks (microseconds of interval)
   ReadGyro        readGyro      (as fast as we can depending of the platform)
@@ -1401,16 +1433,38 @@ void LogValueSpace(t v) {
 
   sched.run();
 *******************************************************************/
-void loop () {
-  
+void main_loop();
+
+ISR(TIMER1_COMPA_vect) 
+{ 
+  static bool in_main_loop = false;
+
+  if (!in_main_loop)
+  {
+    in_main_loop = true;
+    interrupts();
+    main_loop();
+    noInterrupts();
+    in_main_loop = false;
+  }
+}
+
+void loop () { 
+  while(true) {
+    sbi(PINA, PA2); 
+  }
+}
+void main_loop() {
+  sbi(PORTA, PA0);
   currentTime = micros();
-  deltaTime = currentTime - previousTime;
+//  deltaTime = currentTime - previousTime;
 
   
   // ================================================================
   // 100hz task loop
   // ================================================================
-  if (deltaTime >= 10000) {
+//  if (deltaTime >= 10000) 
+  {
   
     frameCounter++;
     measureCriticalSensors();
@@ -1418,8 +1472,8 @@ void loop () {
     G_Dt = (currentTime - hundredHZpreviousTime) / 1000000.0;
     hundredHZpreviousTime = currentTime;
     
-    evaluateGyroRate();
-    evaluateMetersPerSec();
+//    evaluateGyroRate();
+//    evaluateMetersPerSec();
 
     for (int axis = XAXIS; axis <= ZAXIS; axis++) {
       filteredAccel[axis] = computeFourthOrder(meterPerSecSec[axis], &fourthOrder[axis]);
@@ -1547,49 +1601,66 @@ void loop () {
           updateSlowTelemetry10Hz();
         #endif
 		break;
-	case 9:	/* Log */
-	    static uint16_t iterations = 0;
-        static bool got_lt_char = false;
+    default: /* even numbers */
+        break;
+    }
+
+    static uint16_t iterations = 0;
+    enum LOG_STATE { LOG_none, LOG_prealloc, LOG_ready, LOG_other };
+    static LOG_STATE log_state = LOG_none;
+    
+    while (log_state != LOG_ready && LOG_SERIAL.available()) {
+      char c = LOG_SERIAL.read();
+      Serial.write(c);
+      log_state = c == '#' ? LOG_prealloc :
+                  c == '<' ? LOG_ready :
+                             LOG_other;
+      if (log_state == LOG_prealloc)
+        LOG_SERIAL.write((uint8_t)0);        
+    }
+    while (log_state == LOG_ready && LOG_SERIAL.available()) {
+      char c = LOG_SERIAL.read();
+      Serial.write(c);
+    }
+    
+    if (log_state == LOG_ready && motorArmed == ON) {
+      sbi(PORTA, PA1);
+      log_start();
+      log_with_parity(currentTime);
+      log_with_parity(iterations++);
+
+      for (uint8_t axis = XAXIS; axis <= ZAXIS; axis++)
+        log_with_parity(accelRaw[axis]);
+      for (uint8_t axis = XAXIS; axis <= ZAXIS; axis++)
+        log_with_parity(gyroRaw[axis]);
+      for (uint8_t axis = XAXIS; axis <= ZAXIS; axis++)
+        log_with_parity(i_rawMag[axis]);
         
-        while (!got_lt_char && LOG_SERIAL.available()) {
-          char c = LOG_SERIAL.read();
-          Serial.write(c);
-          got_lt_char = c == '<';
-        }
-        while (got_lt_char && LOG_SERIAL.available()) {
-          char c = LOG_SERIAL.read();
-          Serial.write(c);
-        }
+      log_with_parity(baroRawAltitude);
+      log_with_parity(batteryData[0].voltage);
+      
+      // if these are executed, data loss occurs, although I didn't try just including
+      // one of the two loops below
+//      for (byte motor = 0; motor < LASTMOTOR; motor++)
+//        log_with_parity(motorCommand[motor]);
+//
+//      for (uint8_t i = XAXIS; i <= THROTTLE; i++)
+//        log_with_parity(receiverCommand[i]);
         
-        if (got_lt_char && motorArmed == ON) {
-          LogValueSpace(currentTime);               // 1
-          LogValueSpace(iterations++);              // 2
-          LogValueSpace(altitudeHoldState);         // 3
-          LogValueSpace(getBaroAltitude());         // 4
-          LogValueSpace(baroAltitudeToHoldTarget);  // 5
-          LogValueSpace(receiverCommand[THROTTLE]); // 6
-          LogValueSpace(throttle);                  // 7
-          LogValueSpace(altitudeHoldThrottle);      // 8
-          //LogValueSpace(altitudeHoldThrottleCorrection);
-          LogValueSpace(PID[BARO_ALTITUDE_HOLD_PID_IDX].integratedError);
-          for (byte motor = 0; motor < LASTMOTOR; motor++) {
-            LogValueSpace(motorCommand[motor]);
-          }
-          LogValueSpace((float)batteryData[0].voltage/100.0);
-        
-          LOG_SERIAL.println();
-        }
-	    	break;
-	    default: /* even numbers */
-	    	break;
-	    }
+      log_with_parity(q0);
+      log_with_parity(q1);
+      log_with_parity(q2);
+      log_with_parity(q3);
+      cbi(PORTA, PA1);
+    }
  
     previousTime = currentTime;
-    }  
+  }
   
   if (frameCounter >= 100) {
       frameCounter = 0;
   }
+  cbi(PORTA, PA0);
 }
 
 

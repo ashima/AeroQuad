@@ -1,0 +1,19 @@
+python ../parse.py sample_100hz_data.bin | diff - sample_100hz_data.txt
+
+The columns in these data (see ../parse.py):
+
+binary_fields = [
+    BinaryField("currentTime",       "ulong", 1),
+    BinaryField("iterations",        "uint",  1),
+    BinaryField("accel",             "int",   3),
+    BinaryField("gyro",              "int",   3),
+    BinaryField("mag",               "int",   3),
+    BinaryField("altitude",          "float", 1),
+    BinaryField("battery",           "uint",  1),
+    BinaryField("q",                 "float", 4),
+    BinaryField("checksum",          "uint",  1)
+    ]
+
+Furthermore, the below is needed for formatting floats properly:
+br = BinaryRecord([0x12, 0x34], binary_fields, [BinaryFieldType("float", 4, "f", '%.6f')])
+                                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
