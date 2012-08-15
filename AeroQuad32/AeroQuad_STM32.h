@@ -1,15 +1,22 @@
-#undef CameraControl
-#undef OSD
-
 #define __STM32__
 #define DEBUG_INIT
 tSerial &Serial = SERIAL_VAR;
+
+#define ADC_NUMBER_OF_BITS	12
+
 
 #ifdef BOARD_aeroquad32
 	#define STM32_BOARD_TYPE "aeroquad32"
 	#define LED_Green  Port2Pin('E', 6)
 	#define LED_Red    Port2Pin('E', 5)
 	#define LED_Yellow LED_Red
+        #define A1       Port2Pin('B',0)
+        #define A2       Port2Pin('C',4)
+        #define A3       Port2Pin('B',1)
+        #define A4       Port2Pin('C',5)
+        #define A5       Port2Pin('C',2)
+        #define A6       Port2Pin('C',3)
+
 #endif
 #ifdef BOARD_aeroquad32mini
 	#define STM32_BOARD_TYPE "aeroquad32 mini"
@@ -38,7 +45,6 @@ tSerial &Serial = SERIAL_VAR;
 	#include <Gyroscope_ITG3200_ala42.h>
 #else
 	//#include <Gyroscope_ITG3200.h>
-	#include <Platform_MPU6000.h>
 	#include <Gyroscope_MPU6000.h>
 #endif
 
@@ -52,10 +58,12 @@ tSerial &Serial = SERIAL_VAR;
 #endif
 
 // Receiver Declaration
-#ifndef Receiver_PPM
-#define RECEIVER_STM32
+#if defined (ReceiverPPM) || defined (ReceiverHWPPM)
+  #undef ReceiverPPM
+  #undef ReceiverHWPPM
+  #define RECEIVER_STM32PPM
 #else
-#define RECEIVER_STM32PPM
+  #define RECEIVER_STM32
 #endif
 
 // Motor declaration
@@ -85,9 +93,7 @@ tSerial &Serial = SERIAL_VAR;
 
 // Battery Monitor declaration
 #ifdef BattMonitor
-	#define ADC_NUMBER_OF_BITS	12
 	#define BATT_AREF			3.3		// V
-	#define BATT_MAX_DIGITAL	((float)(1<<ADC_NUMBER_OF_BITS))
 
 	#ifdef BOARD_freeflight
 		#define BATT_R_HIGH			10.0	// kOhm
@@ -100,7 +106,7 @@ tSerial &Serial = SERIAL_VAR;
 		#define BATT_ANALOG_INPUT	Port2Pin('C', 0)
 		#define BATT_DIODE_LOSS		0.0
 	#endif
-	#define BattDefaultConfig DEFINE_BATTERY(0, BATT_ANALOG_INPUT, ((BATT_AREF / BATT_MAX_DIGITAL) * (BATT_R_HIGH + BATT_R_LOW) / BATT_R_LOW), BATT_DIODE_LOSS, BM_NOPIN, 0, 0)
+        #define BattDefaultConfig DEFINE_BATTERY(0, BATT_ANALOG_INPUT, (BATT_AREF * (BATT_R_HIGH + BATT_R_LOW) / BATT_R_LOW), BATT_DIODE_LOSS, BM_NOPIN, 0, 0)
 #endif
 
 #ifdef OSD
@@ -115,7 +121,9 @@ tSerial &Serial = SERIAL_VAR;
 
 void HardCodedAxisCalibration()
 {
-  if(accelScaleFactor[XAXIS] == 1.0 && accelScaleFactor[YAXIS] == 1.0 && accelScaleFactor[ZAXIS] == 1.0) {
+  if(   (accelScaleFactor[XAXIS] == 1.0 && accelScaleFactor[YAXIS] == 1.0 && accelScaleFactor[ZAXIS] == 1.0)
+     || (accelScaleFactor[XAXIS] == 0.0 && accelScaleFactor[YAXIS] == 0.0 && accelScaleFactor[ZAXIS] == 0.0)
+  ) {
 #ifdef BOARD_freeflight
     accelScaleFactor[XAXIS] = accelScaleFactor[YAXIS] = accelScaleFactor[ZAXIS] = -0.038;
 #else
@@ -144,6 +152,19 @@ void initPlatform() {
 	pinMode(LED_Yellow, OUTPUT);
 	digitalWrite(LED_Yellow, LOW);
 
+#ifdef BattMonitor
+	pinMode(BATT_ANALOG_INPUT, INPUT_ANALOG);
+#endif
+
+#ifdef BOARD_aeroquad32
+	pinMode(A1, INPUT_ANALOG);
+	pinMode(A2, INPUT_ANALOG);
+	pinMode(A3, INPUT_ANALOG);
+	pinMode(A4, INPUT_ANALOG);
+	pinMode(A5, INPUT_ANALOG);
+	pinMode(A6, INPUT_ANALOG);
+#endif
+
 #ifdef DEBUG_INIT
   Serial.println("\r\nAeroQuad STM32, board type " STM32_BOARD_TYPE ", build date " __DATE__ " "__TIME__);
 #endif
@@ -157,17 +178,12 @@ void initPlatform() {
   Wire.begin(16, 17); // I2C2_SDA PB11, I2C2_SCL PB10
 #endif
 #ifdef BOARD_freeflight
-  Wire.begin(Port2Pin('B', 11), Port2Pin('B', 10)); // I2C1_SDA PB9, I2C1_SCL PB6
+  Wire.begin(Port2Pin('B', 11), Port2Pin('B', 10)); // I2C1_SDA PB11, I2C1_SCL PB10
 #endif
 #ifdef BOARD_discovery_f4
   Wire.begin(Port2Pin('B', 9), Port2Pin('B', 6)); // I2C1_SDA PB9, I2C1_SCL PB6
 #endif
 
-
-
-#ifdef _AEROQUAD_PLATFORM_MPU6000_H_
-  initializeMPU6000Sensors();
-#endif
 
   HardCodedAxisCalibration();
 
@@ -185,11 +201,9 @@ unsigned long previousMeasureCriticalSensorsTime = 0;
 void measureCriticalSensors() {
   // read sensors not faster than every 1 ms
   if (currentTime - previousMeasureCriticalSensorsTime >= 1000) {
-#ifdef _AEROQUAD_PLATFORM_MPU6000_H_
-    readMPU6000Sensors();
-#endif
-    measureAccelSum();
     measureGyroSum();
+    measureAccelSum();
+
     SignalAlive(frameCounter);
 
     previousMeasureCriticalSensorsTime = currentTime;

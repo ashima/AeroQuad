@@ -47,6 +47,7 @@
  ****************************************************************************/
 // Use only one of the following definitions
 #define quadXConfig
+//#define quadXHT_FPVConfig
 //#define quadPlusConfig
 //#define hexPlusConfig
 //#define hexXConfig      // EXPERIMENTAL: not completely re-tested
@@ -79,8 +80,6 @@
 //#define AutoLanding // Enable auto landing on channel AUX3 of the remote, NEED AltitudeHoldBaro AND AltitudeHoldRangeFinder
 
 //#define UseGPS // Try to auto-detect the GPS, may have some detection trouble making the connection to the configurator not working
-//#define UseGPS_NMEA   // force the use of NMEA GPS
-//#define UseGPS_MTK  // force the use of MTK GPS
 //#define UseGPSNavigator // EXPERIMENTAL NEED UseGPS TO BE DEFINED, enable GPS position hold, auto return home when no mission or execute mission
 
 //
@@ -127,6 +126,9 @@
 // For more information on how to setup Telemetry please refer to http://aeroquad.com/showwiki.php?title=Xbee+Installation
 // *******************************************************************************************************************************
 #define WirelessTelemetry  // Enables Wireless telemetry on Serial3  // Wireless telemetry enable
+//#define MavLink
+//#define MAV_SYSTEM_ID 100
+//#define MAV_COMPONENT_ID MAV_COMP_ID_IMU
 
 //
 // *******************************************************************************************************************************
@@ -152,7 +154,7 @@
 // *******************************************************************************************************************************
 // On screen display implementation using MAX7456 chip. See MAX7456.h in libraries for more info and configuration.
 // For more information on how to setup OSD please refer to http://aeroquad.com/showwiki.php?title=On-Screen-Display
-// *******************************************************************************************************************************
+// *************************************************************.******************************************************************
 //#define OSD
 //#define ShowRSSI
 //#define PAL                       // uncomment this to default to PAL video
@@ -163,6 +165,15 @@
 
 //#define OSD_SYSTEM_MENU           // Menu system, currently only usable with OSD
 
+//
+// *******************************************************************************************************************************
+// Support menu on serial enabled LCD display (16x2 characters).  You can change serial port if needed
+// Note: cannot be enabled at the same time with OSD
+// *************************************************************.******************************************************************
+//#define SERIAL_LCD Serial3
+
+
+
 /****************************************************************************
  ****************************************************************************
  ****************************************************************************
@@ -170,4 +181,3 @@
  ****************************************************************************
  ****************************************************************************
  ****************************************************************************/
-
