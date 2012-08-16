@@ -101,6 +101,10 @@
   // Motor declaration
   #define MOTOR_PWM
 
+  #ifndef ADC_NUMBER_OF_BITS
+  #define ADC_NUMBER_OF_BITS 10
+  #endif
+
   // unsupported in v1
   #undef AltitudeHoldBaro
   #undef AltitudeHoldRangeFinder
