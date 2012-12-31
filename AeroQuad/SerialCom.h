@@ -454,6 +454,11 @@ void readSerialCommand() {
       else
         fastTransfer = OFF;
       break;
+      
+    case 0x06:
+    case 0x07:
+    	processCommand(queryType);
+    	
     }
   }
 }
