@@ -7,7 +7,7 @@ struct bits_struct {
 	unsigned C4  : 1;
 	unsigned HeightHold : 1;
 	unsigned UserInControl : 1;
-}
+};
 
 union bits_union { 
 	char ch;
@@ -39,7 +39,8 @@ bool PacketisValid(char * packet, byte size, byte type){
 	if (!(type==0x07 && packet[size-1]==0x03)) return false;
 	//control packet is 7 B X Y Z T C 3
 	if (!(type==0x06 && packet[size-1]==0x02)) return false;
-	//check the Parity
+
+	//check the Parity	
 	return true;
 }
 
@@ -88,16 +89,17 @@ void processCommand(char type)
 		size = 7;
 	}
 	
-	packet = readBytes(packet, size);
+	readBytes(packet, size);
 	
 	/* Check the Parity */
 	if (PacketisValid(packet, size, type))
 	{
+
 	/* Update the bitField Controls*/
-		bitField bf = packet[0];
-		if (bf.field.UserInControl) { /* user is in control, listen to the packet. */
+		bitField.ch = packet[0];
+		if (bitField.field.UserInControl) { /* user is in control, listen to the packet. */
 			/* altitude hold state */	
-			altitudeHoldState = bf.field.HeightHold;
+			altitudeHoldState = bitField.field.HeightHold;
 			/*update the AUX1 receiver */
 			receiverCommand[AUX1] = 1000;
 			
@@ -116,6 +118,11 @@ void processCommand(char type)
 			receiverCommand[YAXIS]    = ConvertByteToStick(packet[2]);			
 			receiverCommand[ZAXIS]    = ConvertByteToStick(packet[3]);				
 			receiverCommand[THROTTLE] = ConvertByteToStick(packet[4]);					
+
+//			SERIAL_PRINT(receiverCommand[XAXIS]);
+//			SERIAL_PRINT(receiverCommand[YAXIS]);
+	//		SERIAL_PRINT(receiverCommand[ZAXIS]);
+//			SERIAL_PRINT(receiverCommand[THROTTLE]);
 		}
 	
 	}

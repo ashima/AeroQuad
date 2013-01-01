@@ -1,6 +1,6 @@
 INSTALL_DIR = /Applications/Arduino.app/Contents/Resources/Java
 AQ = ../
-PORT = /dev/tty.usbmodemfd321
+PORT = /dev/tty.usbmodemfd331
 UPLOAD_RATE = 115200
 MCU = atmega2560
 AVR_UTILS_PATH = /bin

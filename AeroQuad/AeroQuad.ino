@@ -1025,6 +1025,10 @@
   #include "AeroQuad_STM32.h"
 #endif
 
+#ifndef ADC_NUMBER_OF_BITS
+#define ADC_NUMBER_OF_BITS 10
+#endif
+
 //********************************************************
 //****************** KINEMATICS DECLARATION **************
 //********************************************************
@@ -1246,6 +1250,7 @@ HardwareSerial * getSerial()
 #include "FlightCommandProcessor.h"
 #include "HeadingHoldProcessor.h"
 #include "DataStorage.h"
+#include "SerialControl.h"
 #include "SerialCom.h"
 #if defined (UseGPS) || defined (BattMonitor)
   #include "LedStatusProcessor.h"
