@@ -177,7 +177,11 @@ void readSerialCommand() {
 #endif
 
   if (SERIAL_AVAILABLE()) {
-    queryType = SERIAL_READ();
+//    queryType = SERIAL_READ();
+	queryType = processCommand(queryType);
+	
+    
+
     switch (queryType) {
     case '^':
       baroAltitudeToHoldTarget = readFloatSerial();
@@ -455,21 +459,9 @@ void readSerialCommand() {
         fastTransfer = OFF;
       break;
       
-    case 0x06:
-        SERIAL_PRINT("6");
-    	processCommand(queryType);
-        SERIAL_PRINT("6E");
-		break;
-    case 0x07:
-        SERIAL_PRINT("7");
-    	processCommand(queryType);
-
-        SERIAL_PRINT("7E");
-        break;
 
     	
     }
-    SERIAL_PRINTLN("hello");
   }
 }
 

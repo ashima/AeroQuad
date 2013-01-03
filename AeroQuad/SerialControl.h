@@ -1,12 +1,13 @@
 struct bits_struct {
-	unsigned Parity : 1;
-	unsigned C64 : 1;
-	unsigned C32 : 1;
-	unsigned C16 : 1;
-	unsigned C8  : 1;
-	unsigned C4  : 1;
-	unsigned HeightHold : 1;
+//endians are fun.
 	unsigned UserInControl : 1;
+	unsigned HeightHold : 1;
+	unsigned C4  : 1;
+	unsigned C8  : 1;
+	unsigned C16 : 1;
+	unsigned C32 : 1;
+	unsigned C64 : 1;
+	unsigned C128 : 1;
 };
 
 union bits_union { 
@@ -36,11 +37,10 @@ bool PacketisValid(char * packet, byte size, byte type){
 
 	//Check the last byte
 	//control packet is 7 B X Y Z T C 3
-	if (!(type==0x07 && packet[size-1]==0x03)) return false;
+	if (type==0x07) if (packet[size-1]!=0x03) return false;
 	//control packet is 7 B X Y Z T C 3
-	if (!(type==0x06 && packet[size-1]==0x02)) return false;
+	if (type==0x06) if (packet[size-1]!=0x02) return false;
 
-	//check the Parity	
 	return true;
 }
 
@@ -49,13 +49,13 @@ int ConvertByteToStick(byte val){
 	receiverCommand. Normally this is 1000-2000 but we take the defines from Receiver.H
 	*/
 	
-	int scale = (MAXCOMMAND-MINCOMMAND)/255;
+	float scale = (MAXCOMMAND-MINCOMMAND)/255.;
 	int offset = MINCOMMAND;
 	
 	return offset + val * scale;
 }
 
-void processCommand(char type)
+char processCommand(char old_queryType)
 {
 	/* Here we define the packets
 	
@@ -80,28 +80,50 @@ void processCommand(char type)
 	END_CON = 0x03
 
 	 */
-	 
+
+	/* At this point we don't know if a packet was sent. Read the serial and check 
+	for a 0x06 or 0x07, if they are read in, we're in the game, if not, it's 
+	a normal serial command, return it to the caller.
+	*/
+	
+	char queryType = SERIAL_READ();
+
+	if ((queryType!=0x06) && (queryType!=0x07))
+	{
+		return queryType;
+	}
 	char packet[7];
 	byte size;
-	if (type==0x06){
+	if (queryType==0x06){
 		size = 6;
-	} else if (type==0x07) {
+	} else if (queryType==0x07) {
 		size = 7;
 	}
-	
+//	SERIAL_PRINT("A");	
 	readBytes(packet, size);
-	
-	/* Check the Parity */
-	if (PacketisValid(packet, size, type))
-	{
+//	SERIAL_PRINT("B");
+//	SERIAL_PRINT(queryType);SERIAL_PRINT(", ");
+//	for(int i=0;i<size;i++){SERIAL_PRINT(*(packet+i));SERIAL_PRINT(", ");}
 
+	/*Before we start, assume that we're going to fail, and therefore we need
+	a backup from the Spektrum transmitter. If the packet is not valid, or the UserInControl=false
+	we will defer to the Spektrum for now.*/
+	updateReceiver = true;
+
+	/* Check the Parity */
+	if (PacketisValid(packet, size, queryType))
+	{
+//	SERIAL_PRINT("C");
 	/* Update the bitField Controls*/
 		bitField.ch = packet[0];
+		
 		if (bitField.field.UserInControl) { /* user is in control, listen to the packet. */
 			/* altitude hold state */	
 			altitudeHoldState = bitField.field.HeightHold;
+			updateReceiver = false;
 			/*update the AUX1 receiver */
-			receiverCommand[AUX1] = 1000;
+			receiverData[AUX1] = 1000;
+			receiverData[AUX2] = 1000;
 			
 			/* Update the Sticks
 			The numbers from the packet are [0-256), THe output numbers should be [1000-2000]
@@ -114,17 +136,23 @@ void processCommand(char type)
 			*/
 			
 			//X
-			receiverCommand[XAXIS]    = ConvertByteToStick(packet[1]);
-			receiverCommand[YAXIS]    = ConvertByteToStick(packet[2]);			
-			receiverCommand[ZAXIS]    = ConvertByteToStick(packet[3]);				
-			receiverCommand[THROTTLE] = ConvertByteToStick(packet[4]);					
+			receiverData[XAXIS]    = ConvertByteToStick(packet[1]);
+			receiverData[YAXIS]    = ConvertByteToStick(packet[2]);			
+			receiverData[ZAXIS]    = ConvertByteToStick(packet[3]);				
+			receiverData[THROTTLE] = ConvertByteToStick(packet[4]);					
 
-//			SERIAL_PRINT(receiverCommand[XAXIS]);
-//			SERIAL_PRINT(receiverCommand[YAXIS]);
-	//		SERIAL_PRINT(receiverCommand[ZAXIS]);
-//			SERIAL_PRINT(receiverCommand[THROTTLE]);
+		//	SERIAL_PRINT(receiverCommand[XAXIS]);
+		//	SERIAL_PRINT(receiverCommand[YAXIS]);
+		//	SERIAL_PRINT(receiverCommand[ZAXIS]);
+		//	SERIAL_PRINTLN(receiverCommand[THROTTLE]);
 		}
-	
 	}
-	
+	if (queryType==0x06){
+		//return the old query type so that serial commands are continued.
+		return old_queryType;
+	} else if (queryType==0x07) {
+		//update the query type with the control byte from this packet.
+		return packet[size-1];
+	}
+
 }
