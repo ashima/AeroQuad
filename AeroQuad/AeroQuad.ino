@@ -383,6 +383,9 @@
     #define SPARKFUN_5883L_BOB
 //    #define HMC5843
   #endif
+#ifndef ADC_NUMBER_OF_BITS
+#define ADC_NUMBER_OF_BITS 10
+#endif
 
   // Altitude declaration
   #ifdef AltitudeHoldBaro    
@@ -467,6 +470,10 @@
 
   // Motor declaration
   #define MOTOR_PWM_Timer
+
+#ifndef ADC_NUMBER_OF_BITS
+#define ADC_NUMBER_OF_BITS 10
+#endif
 
   // heading mag hold declaration
   #ifdef HeadingMagHold
