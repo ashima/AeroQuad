@@ -122,6 +122,7 @@ char processCommand(char old_queryType)
 			altitudeHoldState = bitField.field.HeightHold;
 			updateReceiver = false;
 			/*update the AUX1 receiver */
+			receiverData[MODE] = 2000; /*heading mode*/
 			receiverData[AUX1] = 1000;
 			receiverData[AUX2] = 1000;
 			
