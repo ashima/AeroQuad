@@ -110,6 +110,7 @@ char processCommand(char old_queryType)
 	if (PacketisValid(packet, size, queryType))
 	{
 	bad_packet_count = 0;
+	packetWarning=false;
 //	SERIAL_PRINT("C");
 	/* Update the bitField Controls*/
 		bitField.ch = packet[0];
@@ -156,6 +157,7 @@ char processCommand(char old_queryType)
 	}
 	} else { //invalid packet
 	bad_packet_count +=1 ;
+	packetWarning=true;
 //	beep.beep(8000-bad_packet_count*100);
 	
 	}

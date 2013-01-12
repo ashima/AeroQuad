@@ -54,6 +54,10 @@ void processLedStatus() {
       digitalWrite(LED_Red, flashingLedState & 4);
     } else if (batteryWarning) {
       digitalWrite(LED_Red, (flashingLedState & 15)==0);
+    } else if (packetError) {
+      digitalWrite(LED_Red, (flashingLedState & 2)==0);
+    } else if (bad_packet_count > 1) {
+	  digitalWrite(LED_Red, (flashingLedState & 8)==0);
     } else { 
       digitalWrite(LED_Red, LOW);
     }

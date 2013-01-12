@@ -45,6 +45,7 @@
 unsigned int bad_packet_count = 0;
 unsigned int bad_packet_threshold = 50;
 boolean packetError      = false;
+boolean packetWarning      = false;
 
 #include "Beep.h"
 Beep beep;
