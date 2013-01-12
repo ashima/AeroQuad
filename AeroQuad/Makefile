@@ -69,6 +69,7 @@ AQ_INCS = \
  -I$(AQ_LIB)/AQ_Accelerometer \
  -I$(AQ_LIB)/AQ_BarometricSensor \
  -I$(AQ_LIB)/AQ_BatteryMonitor \
+ -I$(AQ_LIB)/Beep \
  -I$(AQ_LIB)/AQ_CameraStabilizer \
  -I$(AQ_LIB)/AQ_Compass \
  -I$(AQ_LIB)/AQ_Defines \

@@ -45,10 +45,10 @@
 unsigned int bad_packet_count = 0;
 unsigned int bad_packet_threshold = 50;
 boolean packetError      = false;
-/*
+
 #include "Beep.h"
 Beep beep;
-*/
+
 
 // Analog Reference Value
 // This value provided from Configurator

@@ -32,13 +32,13 @@
  * and process command from the users
  */
 void readPilotCommands() {
-/*	if (bad_packet_count >= bad_packet_threshold)  {
+	if (bad_packet_count >= bad_packet_threshold)  {
 		commandAllMotors(MINCOMMAND);
 		receiverData[THROTTLE] = MINCHECK-50;
 		receiverData[ZAXIS] =MINCHECK-50;
 		packetError = true;
 	}
- */ 
+  
   readReceiver(); 
   if (receiverCommand[THROTTLE] < MINCHECK) {
     zeroIntegralError();
