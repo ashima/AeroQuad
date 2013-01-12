@@ -1386,11 +1386,11 @@ void setup() {
   safetyCheck = 0;
 
   // set up a 10Hz timer for sensor measurements
-  TCCR1A = 0; // Arduino code screws with this and I wasted an hour remembering it; ARGH
-  TCCR1B = (1 << WGM12)| // CTC mode 
-           (1 << CS11) | (1 << CS10); // Fcpu/64
-  OCR1A = 2500; // 100Hz at 16MHz AVR clock, with a prescaler of 64 
-  TIMSK1 = (1 << OCIE1A); // interrupt on OCR1A 
+  TCCR5A = 0; // Arduino code screws with this and I wasted an hour remembering it; ARGH
+  TCCR5B = (1 << WGM52)| // CTC mode 
+           (1 << CS51) | (1 << CS50); // Fcpu/64
+  OCR5A = 2500; // 100Hz at 16MHz AVR clock, with a prescaler of 64 
+  TIMSK5 = (1 << OCIE5A); // interrupt on OCR5A 
   
   DDRA = 0xFF;
   
@@ -1447,7 +1447,7 @@ void log_start() {
 *******************************************************************/
 void main_loop();
 
-ISR(TIMER1_COMPA_vect) 
+ISR(TIMER5_COMPA_vect) 
 { 
   static bool in_main_loop = false;
 
