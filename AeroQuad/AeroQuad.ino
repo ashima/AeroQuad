@@ -1393,6 +1393,9 @@ void setup() {
   TIMSK1 = (1 << OCIE1A); // interrupt on OCR1A 
   
   DDRA = 0xFF;
+  
+//	beep.initialize();
+
 }
 
 template<typename T>
@@ -1529,6 +1532,8 @@ void main_loop() {
       fiftyHZpreviousTime = currentTime;
 
       // Reads external pilot commands and performs functions based on stick configuration
+      readSerialFast();
+
       readPilotCommands(); 
       
       #if defined (UseRSSIFaileSafe) 

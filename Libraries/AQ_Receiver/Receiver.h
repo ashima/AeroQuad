@@ -48,7 +48,6 @@ float receiverSlope[MAX_NB_CHANNEL] = {0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0};
 float receiverOffset[MAX_NB_CHANNEL] = {0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0};
 float receiverSmoothFactor[MAX_NB_CHANNEL] = {0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0};
 int channelCal;
-bool updateReceiver=true;
 void initializeReceiverParam(int nbChannel = 6) {
   
   lastReceiverChannel = nbChannel;
@@ -85,26 +84,7 @@ void readReceiver();
   
 void readReceiver()
 {
-//updateReceiver=false;
-if (updateReceiver) {
-  for(byte channel = XAXIS; channel < lastReceiverChannel; channel++) {
-
-    // Apply receiver calibration adjustment
-    receiverData[channel] = (receiverSlope[channel] * getRawChannelValue(channel)) + receiverOffset[channel];
-    // Smooth the flight control receiver inputs
-    receiverCommandSmooth[channel] = filterSmooth(receiverData[channel], receiverCommandSmooth[channel], receiverSmoothFactor[channel]);
-  }
-  
-  // Reduce receiver commands using receiverXmitFactor and center around 1500
-  for (byte channel = XAXIS; channel < THROTTLE; channel++) {
-    receiverCommand[channel] = ((receiverCommandSmooth[channel] - receiverZero[channel]) * receiverXmitFactor) + receiverZero[channel];
-  }	
-  // No xmitFactor reduction applied for throttle, mode and AUX
-  for (byte channel = THROTTLE; channel < lastReceiverChannel; channel++) {
-    receiverCommand[channel] = receiverCommandSmooth[channel];
-  }
-  }
-  else {
+//There is no receiver code here anymore. All we do is smooth the values from the SixAxis
   //just smooth
   for(byte channel = XAXIS; channel < lastReceiverChannel; channel++) {
     // Smooth the flight control receiver inputs
@@ -115,7 +95,6 @@ if (updateReceiver) {
   for (byte channel = XAXIS; channel < lastReceiverChannel; channel++) {
     receiverCommand[channel] = receiverCommandSmooth[channel];
   }	
-  }
 }
 
 

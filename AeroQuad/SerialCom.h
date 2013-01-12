@@ -29,6 +29,8 @@
 #ifndef _AQ_SERIAL_COMM_
 #define _AQ_SERIAL_COMM_
 
+int counter=0;
+int counter2=0;
 #ifdef MultipleSerialTelemetry
 
 int readLine(HardwareSerial* ser, char* buffer, size_t size, 
@@ -165,7 +167,7 @@ void readSerialPID(unsigned char PIDid) {
   pid->integratedError = 0;
 }
 
-void readSerialCommand() {
+void readSerialFast(){
   // Check for serial message
 #if defined (MultipleSerialTelemetry)
     const char MAX_LENGTH=41;
@@ -175,13 +177,27 @@ void readSerialCommand() {
 		_ser = ser;
 	}
 #endif
+	bad_packet_count +=1 ;
 
   if (SERIAL_AVAILABLE()) {
 //    queryType = SERIAL_READ();
 	queryType = processCommand(queryType);
-	
-    
+//read a second packet if possible.
+	if (SERIAL_AVAILABLE())	{
+		queryType = processCommand(queryType);
+		counter=0;
+		counter2=counter2+1;
+	}
+	else{
+		counter=counter+1;
+	}
+	}
+	}
+void readSerialCommand() {
+	readSerialFast();
 
+
+	if (true) {
     switch (queryType) {
     case '^':
       baroAltitudeToHoldTarget = readFloatSerial();
@@ -832,6 +848,9 @@ void sendSerialTelemetry() {
       PrintValueComma(0);
     #endif
     PrintValueComma(flightMode);
+    PrintValueComma(SERIAL_AVAILABLE());
+    PrintValueComma(counter2);
+    PrintValueComma(counter);
     SERIAL_PRINTLN();
     break;
     

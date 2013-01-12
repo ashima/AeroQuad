@@ -1,3 +1,4 @@
+
 struct bits_struct {
 //endians are fun.
 	unsigned UserInControl : 1;
@@ -105,25 +106,24 @@ char processCommand(char old_queryType)
 //	SERIAL_PRINT(queryType);SERIAL_PRINT(", ");
 //	for(int i=0;i<size;i++){SERIAL_PRINT(*(packet+i));SERIAL_PRINT(", ");}
 
-	/*Before we start, assume that we're going to fail, and therefore we need
-	a backup from the Spektrum transmitter. If the packet is not valid, or the UserInControl=false
-	we will defer to the Spektrum for now.*/
-	updateReceiver = true;
-
 	/* Check the Parity */
 	if (PacketisValid(packet, size, queryType))
 	{
+	bad_packet_count = 0;
 //	SERIAL_PRINT("C");
 	/* Update the bitField Controls*/
 		bitField.ch = packet[0];
 		
-		if (bitField.field.UserInControl) { /* user is in control, listen to the packet. */
+/* user is in control, listen to the packet. */
 			/* altitude hold state */	
 			altitudeHoldState = bitField.field.HeightHold;
-			updateReceiver = false;
 			/*update the AUX1 receiver */
 			receiverData[MODE] = 2000; /*heading mode*/
-			receiverData[AUX1] = 1000;
+			if (altitudeHoldState == 1){
+				receiverData[AUX1] = 1000;
+			} else {
+				receiverData[AUX1] = 2000;
+			}
 			receiverData[AUX2] = 1000;
 			
 			/* Update the Sticks
@@ -146,8 +146,7 @@ char processCommand(char old_queryType)
 		//	SERIAL_PRINT(receiverCommand[YAXIS]);
 		//	SERIAL_PRINT(receiverCommand[ZAXIS]);
 		//	SERIAL_PRINTLN(receiverCommand[THROTTLE]);
-		}
-	}
+	
 	if (queryType==0x06){
 		//return the old query type so that serial commands are continued.
 		return old_queryType;
@@ -155,5 +154,11 @@ char processCommand(char old_queryType)
 		//update the query type with the control byte from this packet.
 		return packet[size-1];
 	}
-
+	} else { //invalid packet
+	bad_packet_count +=1 ;
+//	beep.beep(8000-bad_packet_count*100);
+	
+	}
+	
+	
 }
