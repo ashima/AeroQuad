@@ -1394,7 +1394,7 @@ void setup() {
   
   DDRA = 0xFF;
   
-//	beep.initialize();
+	beep.initialize();
 
 }
 

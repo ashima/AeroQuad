@@ -54,13 +54,17 @@ void processLedStatus() {
       digitalWrite(LED_Red, flashingLedState & 4);
     } else if (batteryWarning) {
       digitalWrite(LED_Red, (flashingLedState & 15)==0);
-    } else if (packetError) {
-      digitalWrite(LED_Red, (flashingLedState & 2)==0);
-    } else if (bad_packet_count > 1) {
+    } else if (packetsStarted && packetError) {
+      digitalWrite(LED_Red, (flashingLedState & 1)==0);
+      beep.beep(packet_error_freq);
+    } else if (packetsStarted && bad_packet_count > 5) {
 	  digitalWrite(LED_Red, (flashingLedState & 8)==0);
+      beep.beep(packet_warning_freq + bad_packet_count*packet_beep_delta);
     } else { 
       digitalWrite(LED_Red, LOW);
     }
+
+
   #endif  
 
   //

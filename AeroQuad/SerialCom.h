@@ -88,7 +88,8 @@ int readLine(HardwareSerial* ser, char* buffer, size_t size,
 bool configureXBee(char command[], const int length)
 {
   const char MAX_LENGTH = 11;
-  
+  _ser.print("COMMAND: ");
+  _ser.print(command);
   if (strlen(command) > 0)
   {
     // 1s guard time
@@ -177,21 +178,29 @@ void readSerialFast(){
 		_ser = ser;
 	}
 #endif
-	bad_packet_count +=1 ;
-
   if (SERIAL_AVAILABLE()) {
+      beep.beep(0);
+
 //    queryType = SERIAL_READ();
 	queryType = processCommand(queryType);
+
 //read a second packet if possible.
 	if (SERIAL_AVAILABLE())	{
 		queryType = processCommand(queryType);
 		counter=0;
 		counter2=counter2+1;
+		packetsStarted=true;
 	}
 	else{
 		counter=counter+1;
 	}
 	}
+	else
+	{ //no packets for me this time around
+		bad_packet_count +=1 ;
+	}
+
+
 	}
 void readSerialCommand() {
 	readSerialFast();

@@ -44,9 +44,14 @@
 
 unsigned int bad_packet_count = 0;
 unsigned int bad_packet_threshold = 50;
+unsigned int packet_error_freq = 8000;
+unsigned int packet_warning_freq = 3000;
+int packet_beep_delta = (packet_error_freq - packet_warning_freq)/bad_packet_threshold;
+
+boolean packetsStarted = false;
 boolean packetError      = false;
 boolean packetWarning      = false;
-
+boolean packetLossCausedShutdown = false;
 #include "Beep.h"
 Beep beep;
 

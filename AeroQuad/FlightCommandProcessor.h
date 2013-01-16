@@ -33,12 +33,14 @@
  */
 void readPilotCommands() {
 	if (bad_packet_count >= bad_packet_threshold)  {
-		commandAllMotors(MINCOMMAND);
-		receiverData[THROTTLE] = MINCHECK-50;
-		receiverData[ZAXIS] =MINCHECK-50;
+		receiverData[THROTTLE] = MINCHECK;
 		packetError = true;
+		packetLossCausedShutdown=true;
 	}
-  
+  if ((packetLossCausedShutdown) && (!packetError)){
+  	packetLossCausedShutdown = false;
+//  	receiverData[THROTTLE] = MINCHECK;
+  }
   readReceiver(); 
   if (receiverCommand[THROTTLE] < MINCHECK) {
     zeroIntegralError();

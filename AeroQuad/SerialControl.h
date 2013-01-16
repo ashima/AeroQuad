@@ -91,6 +91,10 @@ char processCommand(char old_queryType)
 
 	if ((queryType!=0x06) && (queryType!=0x07))
 	{
+		//not really a bad packet, but could flood the network
+		//If I spend 1 second processing serial input, I may as well miss 1 second of control packets
+		bad_packet_count +=1 ;
+		packetWarning=true;
 		return queryType;
 	}
 	char packet[7];
@@ -111,6 +115,7 @@ char processCommand(char old_queryType)
 	{
 	bad_packet_count = 0;
 	packetWarning=false;
+	packetError=false;
 //	SERIAL_PRINT("C");
 	/* Update the bitField Controls*/
 		bitField.ch = packet[0];
