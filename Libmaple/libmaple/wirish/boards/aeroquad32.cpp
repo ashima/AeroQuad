@@ -80,6 +80,12 @@ void boardInit(void) {
 	gpio_set_af_mode(GPIOB,  5, 2);
 	gpio_set_af_mode(GPIOB,  0, 2);
 	gpio_set_af_mode(GPIOB,  1, 2);
+
+	// remap TIMER5 to PA0,1,2 (3)
+	gpio_set_af_mode(GPIOA,  0, 2);
+	gpio_set_af_mode(GPIOA,  1, 2);
+	gpio_set_af_mode(GPIOA,  2, 2);
+
 #else
 	__io uint32 *mapr = &AFIO_BASE->MAPR;
 	*mapr = ((*mapr) & ~(7 << 24) & AFIO_MAPR_SPI1_REMAP )
@@ -183,7 +189,7 @@ extern const stm32_pin_info PIN_MAP[BOARD_NR_GPIO_PINS] = {
 
     {GPIOE,   NULL, NULL,  0, 0, ADCx}, /* D64/PE0  */
     {GPIOE,   NULL, NULL,  1, 0, ADCx}, /* D65/PE1  */
-    {GPIOE,   NULL, NULL,  1, 0, ADCx}, /* D66/PE2  */
+    {GPIOE,   NULL, NULL,  2, 0, ADCx}, /* D66/PE2  */
     {GPIOE,   NULL, NULL,  3, 0, ADCx}, /* D67/PE3  */
     {GPIOE,   NULL, NULL,  4, 0, ADCx}, /* D68/PE4  */
     {GPIOE,   NULL, NULL,  5, 0, ADCx}, /* D69/PE5  */

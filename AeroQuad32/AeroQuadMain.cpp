@@ -1,3 +1,4 @@
+#include <../AeroQuad/UserConfiguration.h>
 #include <SerialMapping.h>
 #include <WProgram.h>
 
@@ -18,4 +19,4 @@ int main(void)
 
 
 #include "../AeroQuad/AeroQuad.ino"
-//#include "../AeroQuad/AeroQuad.cpp"
+

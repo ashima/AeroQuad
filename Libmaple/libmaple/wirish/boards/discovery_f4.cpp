@@ -65,12 +65,6 @@ void boardInit(void) {
 	//gpio_set_af_mode(GPIOA, 2, 7);
 	//gpio_set_af_mode(GPIOA, 3, 7);
 	return;
-	__io uint32 *mapr = &AFIO_BASE->MAPR;
-	*mapr = ((*mapr) & ~(7 << 24) & AFIO_MAPR_SPI1_REMAP )
-		| AFIO_MAPR_TIM1_REMAP | AFIO_MAPR_TIM4_REMAP
-		| AFIO_MAPR_TIM2_REMAP_PA15_PB3_PA2_PA3 | AFIO_MAPR_TIM3_REMAP_PARTIAL //| BIT(8) | BIT(11)
-		| AFIO_MAPR_USART2_REMAP | AFIO_MAPR_USART3_REMAP
-		| AFIO_MAPR_SWJ_CFG_NO_JTAG_SW;
 }
 
 
@@ -157,7 +151,7 @@ extern const stm32_pin_info PIN_MAP[BOARD_NR_GPIO_PINS] = {
 
     {GPIOE,   NULL, NULL,  0, 0, ADCx}, /* D64/PE0  */
     {GPIOE,   NULL, NULL,  1, 0, ADCx}, /* D65/PE1  */
-    {GPIOE,   NULL, NULL,  1, 0, ADCx}, /* D66/PE2  */
+    {GPIOE,   NULL, NULL,  2, 0, ADCx}, /* D66/PE2  */
     {GPIOE,   NULL, NULL,  3, 0, ADCx}, /* D67/PE3  */
     {GPIOE,   NULL, NULL,  4, 0, ADCx}, /* D68/PE4  */
     {GPIOE,   NULL, NULL,  5, 0, ADCx}, /* D69/PE5  */
