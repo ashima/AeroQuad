@@ -30,6 +30,7 @@
 #include <Gyroscope.h>
 #include <SensorsStatus.h>
 
+#define GYRO_CALIBRATION_TRESHOLD 4
 
 #define GYRO_ADDRESS 0x69
 
@@ -50,8 +51,6 @@ int gyroAxisInversionFactor[3] = {1,-1,-1};
 
 
 void initializeGyro() {
-
-
   sendByteI2C(GYRO_ADDRESS, 0x0f);
   if (readByteI2C(GYRO_ADDRESS) == 0b11010011) {
     vehicleState |= GYRO_DETECTED;
@@ -83,15 +82,22 @@ void initializeGyro() {
   delay(10); 
 }
   
+// Read raw values from sensor (inverted if required)
+void readGyroRaw(int *gyroRaw) {
+    sendByteI2C(GYRO_ADDRESS, 0x80 | 0x28); // 0x80 autoincrement from 0x28 register
+    Wire.requestFrom(GYRO_ADDRESS,6);
+    
+    for (byte axis = XAXIS; axis <= ZAXIS; axis++) {
+        gyroRaw[axis] = gyroAxisInversionFactor[axis] * readReverseShortI2C();
+    }
+}
+
 void measureGyro() {
-  int value;
-  sendByteI2C(GYRO_ADDRESS, 0x80 | 0x28); // 0x80 autoincrement from 0x28 register
-  Wire.requestFrom(GYRO_ADDRESS,6);
-  for (byte axis = XAXIS; axis <= ZAXIS; axis++) { 
-    //value = (Wire.read() | (Wire.read() << 8));
-      value = gyroAxisInversionFactor[axis] * readReverseShortI2C();
-      gyroRate[axis] = filterSmooth(value * gyroScaleFactor, gyroRate[axis], gyroSmoothFactor); 
-      //gyroRate[axis] = value;
+    int gyroRaw[3];
+    readGyroRaw(gyroRaw);
+    
+  for (byte axis = XAXIS; axis <= ZAXIS; axis++) {
+      gyroRate[axis] = (gyroRaw[axis] - gyroZero[axis]) * gyroScaleFactor;
   }
   
   // Measure gyro heading
@@ -104,24 +110,53 @@ void measureGyro() {
 
 
 void measureGyroSum() {
+    int gyroRaw[3];
+    readGyroRaw(gyroRaw);
+    
+    for (byte axis = XAXIS; axis <= ZAXIS; axis++) {
+        gyroSample[axis] += gyroRaw[axis];
+    }
+    
+    gyroSampleCount++;
 }
 
 
 void evaluateGyroRate() {
+    for (byte axis = 0; axis <= ZAXIS; axis++) {
+        gyroRate[axis] = ((gyroSample[axis] / gyroSampleCount) - gyroZero[axis]) * gyroScaleFactor;
+        gyroSample[axis] = 0;
+    }
+    
+    gyroSampleCount = 0;
+    
+    // Measure gyro heading
+    long int currentTime = micros();
+    if (gyroRate[ZAXIS] > radians(1.0) || gyroRate[ZAXIS] < radians(-1.0)) {
+        gyroHeading += gyroRate[ZAXIS] * ((currentTime - gyroLastMesuredTime) / 1000000.0);
+    }
+    gyroLastMesuredTime = currentTime;
 }
 
 
-void calibrateGyro() {
+boolean calibrateGyro() {
+
   int findZero[FINDZERO];
-  
+  int diff = 0; 
   for (byte axis = XAXIS; axis <= ZAXIS; axis++) {
     for (int i=0; i<FINDZERO; i++) {
       sendByteI2C(GYRO_ADDRESS, 0x80 | (0x28+axis*2));
       Wire.requestFrom(GYRO_ADDRESS,2);
-      findZero[i] = (Wire.read() | (Wire.read() << 8));
-      delay(5);
+      findZero[i] = readReverseShortI2C();
+      delay(10);
     }
-    gyroZero[axis] = findMedianInt(findZero, FINDZERO);
+    int tmp = findMedianIntWithDiff(findZero, FINDZERO, &diff);
+	if (diff <= GYRO_CALIBRATION_TRESHOLD) { // 4 = 0.27826087 degrees during 49*10ms measurements (490ms). 0.57deg/s difference between first and last.
+	  gyroZero[axis] = tmp;
+	} 
+	else {
+		return false; //Calibration failed.
+	}
   }
+  return true;
 }
 #endif

@@ -31,14 +31,17 @@
 #include "Receiver.h"
 
 // Flight Software Version
-#define SOFTWARE_VERSION 3.1
+#define SOFTWARE_VERSION 3.2
 
-#if defined WirelessTelemetry
-  #define BAUD 111111 // use this to be compatible with USB and XBee connections
+#if defined CONFIG_BAUDRATE
+  #define BAUD CONFIG_BAUDRATE
 #else
-  #define BAUD 115200
+  #if defined WirelessTelemetry && !defined MavLink
+    #define BAUD 111111 // use this to be compatible with USB and XBee connections
+  #else
+    #define BAUD 115200
+  #endif
 #endif  
-
 
 /**
  * ESC calibration process global declaration
@@ -71,12 +74,14 @@ byte maxLimit = OFF;
 byte minLimit = OFF;
 float filteredAccel[3] = {0.0,0.0,0.0};
 boolean inFlight = false; // true when motor are armed and that the user pass one time the min throttle
+float rotationSpeedFactor = 1.0; 
 
 // main loop time variable
 unsigned long previousTime = 0;
 unsigned long currentTime = 0;
 unsigned long deltaTime = 0;
 // sub loop time variable
+unsigned long oneHZpreviousTime = 0;
 unsigned long tenHZpreviousTime = 0;
 unsigned long lowPriorityTenHZpreviousTime = 0;
 unsigned long lowPriorityTenHZpreviousTime2 = 0;
@@ -144,7 +149,7 @@ void reportVehicleState();
   int batteryMonitorStartThrottle = 0;
   int batteryMonitorThrottleTarget = 1450;
   unsigned long batteryMonitorStartTime = 0;
-  unsigned long batteryMonitorGoinDownTime = 60000; 
+  unsigned long batteryMonitorGoingDownTime = 60000; 
 
   
   #if defined BattMonitorAutoDescent
@@ -170,12 +175,17 @@ void reportVehicleState();
   int minThrottleAdjust = -50;
   int maxThrottleAdjust = 50;
   int altitudeHoldThrottle = 1000;
-  boolean isStoreAltitudeNeeded = false;
+  boolean isAltitudeHoldInitialized = false;
   
-//  float estimatedXVelocity = 0;
-//  float estimatedYVelocity = 0;
-//  int estimatedZVelocity = 0;
-//  float previousSensorAltitude = 0.0;
+  
+  float velocityCompFilter1 = 1.0 / (1.0 + 0.3);
+  float velocityCompFilter2 = 1 - velocityCompFilter1;
+
+  boolean runtimaZBiasInitialized = false;  
+  float zVelocity = 0.0;
+  float estimatedZVelocity = 0.0;
+  float runtimeZBias = 0.0; 
+  float zDampeningThrottleCorrection = 0.0;
 
   #if defined AltitudeHoldBaro
     float baroAltitudeToHoldTarget = 0.0;
@@ -195,7 +205,7 @@ void reportVehicleState();
   #define MOTOR_AUTO_DESCENT_STATE 4
   
   byte autoLandingState = OFF;
-  boolean isStoreAltitudeForAutoLanfingNeeded = false;
+  boolean isAutoLandingInitialized = false;
   int autoLandingThrottleCorrection = 0;
 #endif
 
@@ -219,11 +229,11 @@ void reportVehicleState();
     int gpsRollAxisCorrection = 0;
     int gpsPitchAxisCorrection = 0;
     int gpsYawAxisCorrection = 0;
-    boolean isStorePositionNeeded = false;
-    boolean isInitNavigationNeeded = false;
+    boolean isPositionHoldInitialized = false;
+    boolean isGpsNavigationInitialized = false;
 
     int waypointIndex = -1;    
-    float gpsDistanceToDestination = 99999999.0;
+    float distanceToDestination = 99999999.0;
     GeodeticPosition waypoint[MAX_WAYPOINTS] = {
       GPS_INVALID_POSITION, GPS_INVALID_POSITION, GPS_INVALID_POSITION, GPS_INVALID_POSITION,
       GPS_INVALID_POSITION, GPS_INVALID_POSITION, GPS_INVALID_POSITION, GPS_INVALID_POSITION,
@@ -237,24 +247,6 @@ void reportVehicleState();
   #endif
 #endif
 //////////////////////////////////////////////////////
-
-
-
-
-
-/**
- * Mavlink Serial communication global declaration
- */
-#ifdef MavLink
-  #define RECEIVELOOPTIME 10000 // 100Hz
-  #define HEARTBEATLOOPTIME 1000000 // 1Hz
-  #define RAWDATALOOPTIME 100000 // 10Hz
-  #define SYSTEMSTATUSLOOPTIME 100000 // 10Hz
-  #define ATTITUDELOOPTIME 100000 // 10Hz
-#endif
-//////////////////////////////////////////////////////
-
-
 
 /**
  * EEPROM global section
@@ -291,7 +283,6 @@ typedef struct {
   float WINDUPGUARD_ADR;
   float XMITFACTOR_ADR;
   float MINARMEDTHROTTLE_ADR;
-  float GYROSMOOTH_ADR;
   float AREF_ADR;
   float FLIGHTMODE_ADR;
   float HEADINGHOLD_ADR;
@@ -303,15 +294,7 @@ typedef struct {
   float ALTITUDE_BUMP_ADR;
   float ALTITUDE_PANIC_ADR;
   // Gyro calibration
-  float GYRO_ROLL_ZERO_ADR;
-  float GYRO_PITCH_ZERO_ADR;
-  float GYRO_YAW_ZERO_ADR;
-  float GYRO_ROLL_TEMP_BIAS_SLOPE_ADR;
-  float GYRO_PITCH_TEMP_BIAS_SLOPE_ADR;
-  float GYRO_YAW_TEMP_BIAS_SLOPE_ADR;
-  float GYRO_ROLL_TEMP_BIAS_INTERCEPT_ADR;
-  float GYRO_PITCH_TEMP_BIAS_INTERCEPT_ADR;
-  float GYRO_YAW_TEMP_BIAS_INTERCEPT_ADR;
+  float ROTATION_SPEED_FACTOR_ARD;
   // Accel Calibration
   float XAXIS_ACCEL_BIAS_ADR;
   float XAXIS_ACCEL_SCALE_FACTOR_ADR;
@@ -321,11 +304,8 @@ typedef struct {
   float ZAXIS_ACCEL_SCALE_FACTOR_ADR;
   // Mag Calibration
   float XAXIS_MAG_BIAS_ADR;
-  float XAXIS_MAG_SCALE_FACTOR_ADR;
   float YAXIS_MAG_BIAS_ADR;
-  float YAXIS_MAG_SCALE_FACTOR_ADR;
   float ZAXIS_MAG_BIAS_ADR;
-  float ZAXIS_MAG_SCALE_FACTOR_ADR;
   // Battery Monitor
   float BATT_ALARM_VOLTAGE_ADR;
   float BATT_THROTTLE_TARGET_ADR;
@@ -347,6 +327,7 @@ typedef struct {
   float SERVOMAXPITCH_ADR;
   float SERVOMAXROLL_ADR;
   float SERVOMAXYAW_ADR;
+  float SERVOTXCHANNELS_ADR;
   // GPS mission storing
   float GPS_MISSION_NB_POINT_ADR;
   GeodeticPosition WAYPOINT_ADR[MAX_WAYPOINTS];
@@ -372,23 +353,6 @@ void nvrWritePID(unsigned char IDPid, unsigned int IDEeprom);
 #define writeLong(value, addr) nvrWriteLong(value, GET_NVR_OFFSET(addr))
 #define readPID(IDPid, addr) nvrReadPID(IDPid, GET_NVR_OFFSET(addr))
 #define writePID(IDPid, addr) nvrWritePID(IDPid, GET_NVR_OFFSET(addr))
-
-#ifdef MavLink
-  void readSerialMavLink(void);
-  void sendSerialHeartbeat(void); // defined in MavLink.pde
-  void sendSerialBoot(void);
-  void sendSerialSysStatus(void);
-  void sendSerialRawIMU(void);
-  void sendSerialAttitude(void);
-  void sendSerialAltitude(void);
-  void sendSerialRcRaw(void);
-  void sendSerialRcScaled(void);
-  void sendSerialRawPressure(void);
-  void sendSerialPID(int , int8_t[], int8_t[], int8_t[], int, int);
-  void sendSerialParamValue(int8_t[], float, int, int);
-  void sendSerialHudData(void);
-  void sendSerialGpsPostion(void);
-#endif
 
 /**
  * Debug utility global declaration

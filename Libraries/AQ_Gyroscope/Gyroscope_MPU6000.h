@@ -26,6 +26,8 @@ int gyroRaw[3] = {0,0,0};
 #include <Platform_MPU6000.h>
 #include <Gyroscope.h>
 
+#define GYRO_CALIBRATION_TRESHOLD 10
+
 void initializeGyro() {
   float range = 2*1000.0;
   gyroScaleFactor = radians(range/65536.0);
@@ -33,7 +35,7 @@ void initializeGyro() {
   initializeMPU6000Sensors();
 }
 
-void GyroUpdateHeading()
+void gyroUpdateHeading()
 {
   long int currentTime = micros();
   if (gyroRate[ZAXIS] > (float)radians(1.0) || gyroRate[ZAXIS] < (float)radians(-1.0)) {
@@ -51,10 +53,10 @@ void measureGyro() {
   gyroADC[ZAXIS] = gyroZero[ZAXIS] - (gyroRaw[ZAXIS]=MPU6000.data.gyro.z);
 
   for (byte axis = 0; axis <= ZAXIS; axis++) {
-    gyroRate[axis] = filterSmooth(gyroADC[axis] * gyroScaleFactor, gyroRate[axis], gyroSmoothFactor);
+    gyroRate[axis] = gyroADC[axis] * gyroScaleFactor;
   }
 
-  GyroUpdateHeading();
+  gyroUpdateHeading();
 }
 
 void measureGyroSum() {
@@ -78,32 +80,40 @@ void evaluateGyroRate() {
   gyroSampleCount = 0;
 
   for (byte axis = 0; axis <= ZAXIS; axis++) {
-    gyroRate[axis] = filterSmooth(gyroADC[axis] * gyroScaleFactor, gyroRate[axis], gyroSmoothFactor);
+    gyroRate[axis] = gyroADC[axis] * gyroScaleFactor;
   }
 
-  GyroUpdateHeading();
+  gyroUpdateHeading();
 }
 
 
-void calibrateGyro() {
+boolean calibrateGyro() {
+  
   int findZero[FINDZERO];
-
+  int diff = 0; 
   for (byte axis = 0; axis < 3; axis++) {
     for (int i=0; i<FINDZERO; i++) {
       readMPU6000Sensors();
-      short data;
       if(axis == XAXIS) {
-    	  data = MPU6000.data.gyro.x;
-      } else if(axis == YAXIS) {
-    	  data = MPU6000.data.gyro.y;
-      } else {
-    	  data = MPU6000.data.gyro.z;
+    	findZero[i] = MPU6000.data.gyro.x;
+      } 
+	  else if(axis == YAXIS) {
+    	findZero[i] = MPU6000.data.gyro.y;
+      } 
+	  else {
+    	findZero[i] = MPU6000.data.gyro.z;
       }
-      findZero[i] = data;
       delay(10);
     }
-    gyroZero[axis] = findMedianInt(findZero, FINDZERO);
+    int tmp = findMedianIntWithDiff(findZero, FINDZERO, &diff);
+	if (diff <= GYRO_CALIBRATION_TRESHOLD) { 
+	  gyroZero[axis] = tmp;
+	} 
+	else {
+		return false; //Calibration failed.
+	}
   }
+  return true;
 }
 
 #endif
