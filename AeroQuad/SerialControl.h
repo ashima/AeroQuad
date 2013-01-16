@@ -1,3 +1,7 @@
+/*
+Copyright Ashima Research 2012-
+ashimaresearch.com
+*/
 
 struct bits_struct {
 //endians are fun.
