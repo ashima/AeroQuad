@@ -366,12 +366,19 @@
 
   #include <Device_I2C.h>
 
-  // Gyroscope declaration
-  #include <Gyroscope_ITG3200.h>
-
-  // Accelerometer declaration
-  #include <Accelerometer_BMA180.h>
-
+  #ifdef USE_MPU9150
+    #include <Platform_MPU9150.h>
+    #include <Gyroscope_MPU9150.h>
+    #include <Accelerometer_MPU9150.h>
+    #include <Magnetometer_MPU9150.h>
+  #else
+    // Gyroscope declaration
+    #include <Gyroscope_ITG3200.h>
+  
+    // Accelerometer declaration
+    #include <Accelerometer_BMA180.h>
+  #endif
+  
   // Receiver Declaration
   #define RECEIVER_MEGA
 
@@ -379,13 +386,14 @@
   #define MOTOR_PWM_Timer
 
   // heading mag hold declaration
-  #ifdef HeadingMagHold
+  #if defined(HeadingMagHold) && !defined(USE_MPU9150)
     #define SPARKFUN_5883L_BOB
 //    #define HMC5843
   #endif
-#ifndef ADC_NUMBER_OF_BITS
-#define ADC_NUMBER_OF_BITS 10
-#endif
+
+  #ifndef ADC_NUMBER_OF_BITS
+  #define ADC_NUMBER_OF_BITS 10
+  #endif
 
   // Altitude declaration
   #ifdef AltitudeHoldBaro    
@@ -446,6 +454,10 @@
    * Measure critical sensors
    */
   void measureCriticalSensors() {
+    #ifdef USE_MPU9150
+      readMPU9150Sensors();
+    #endif
+    // #if USE_MPU9150, these don't perform any I2C calls
     measureGyro();
     measureAccel();
   }
@@ -1102,7 +1114,12 @@
   #include <Magnetometer_HMC5883L.h>
   #include <HeadingFusionProcessor.h>
 #elif defined (COMPASS_CHR6DM)
+  // blank
+#elif defined USE_MPU9150
+  #include <HeadingFusionProcessor.h>
 #endif
+
+
 
 //********************************************************
 //******* ALTITUDE HOLD BAROMETER DECLARATION ************

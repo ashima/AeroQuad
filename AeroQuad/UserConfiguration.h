@@ -74,6 +74,7 @@
 // Optional Sensors
 // Warning:  If you enable HeadingHold or AltitudeHold and do not have the correct sensors connected, the flight software may hang
 // *******************************************************************************************************************************
+#define USE_MPU9150
 #define HeadingMagHold // Enables Magnetometer, gets automatically selected if CHR6DM is defined
 #define AltitudeHoldBaro // Enables BMP085 Barometer
 //#define AltitudeHoldRangeFinder // Enable altitude hold with range finder, Not displayed on the configurator
