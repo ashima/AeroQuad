@@ -84,6 +84,7 @@ AQ_INCS = \
  -I$(AQ_LIB)/AQ_Platform_APM \
  -I$(AQ_LIB)/AQ_Platform_CHR6DM \
  -I$(AQ_LIB)/AQ_Platform_Wii \
+ -I$(AQ_LIB)/AQ_Platform_MPU9150 \
  -I$(AQ_LIB)/AQ_RangeFinder \
  -I$(AQ_LIB)/AQ_Receiver \
  -I$(AQ_LIB)/AQ_SPI
