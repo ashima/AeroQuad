@@ -327,6 +327,9 @@ void processFlightControl() {
   // Apply limits to motor commands
   for (byte motor = 0; motor < LASTMOTOR; motor++) {
     motorCommand[motor] = constrain(motorCommand[motor], motorMinCommand[motor], motorMaxCommand[motor]);
+    
+    if (packetError)
+      motorCommand[motor] = minArmedThrottle;
   }
 
   // ESC Calibration
@@ -341,4 +344,5 @@ void processFlightControl() {
 }
 
 #endif //#define _AQ_PROCESS_FLIGHT_CONTROL_H_
+
 

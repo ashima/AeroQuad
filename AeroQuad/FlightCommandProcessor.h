@@ -34,6 +34,7 @@
 void readPilotCommands() {
 	if (bad_packet_count >= bad_packet_threshold)  {
 		receiverData[THROTTLE] = MINCHECK;
+		commandAllMotors(MINCOMMAND);
 		packetError = true;
 		packetLossCausedShutdown=true;
 	}
