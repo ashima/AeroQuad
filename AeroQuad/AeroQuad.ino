@@ -1,3 +1,4 @@
+#include "Arduino.h"
 #include "wiring_private.h"
 /*
   AeroQuad v3.0.1 - February 2012

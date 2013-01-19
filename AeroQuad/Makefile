@@ -241,10 +241,14 @@ build: elf hex
 #	$(AVR_UTILS_PATH)/test -d applet || mkdir applet
 #	$(CXX) -c $(ALL_CXXFLAGS) main.cpp -o applet/main.
 
-applet/main.o: AeroQuad.ino
+applet/main.cpp: AeroQuad.ino	
 	test -d applet || mkdir applet
-	echo '#include "Arduino.h"' > applet/main.cpp
-	cat AeroQuad.ino >> applet/main.cpp
+	cp AeroQuad.ino applet/main.cpp
+
+map = $(foreach a,$(2),$(call $(1),$(a)))
+sources_from_dir = $(shell find $(1) -name '*.h' -or -name '*.cpp' -or -name '*.c' )
+
+applet/main.o: applet/main.cpp Makefile $(call map,sources_from_dir,$(subst -I,,$(AQ_INCS))) $(call sources_from_dir,.)
 	$(CXX) -c $(ALL_CXXFLAGS) applet/main.cpp -o applet/main.o
 
 elf: applet/main.elf
@@ -299,7 +303,7 @@ extcoff: main.elf
 
 # Link: create ELF output file from library.
 #applet/$(TARGET).elf: $(TARGET).pde applet/core.a
-applet/main.elf: applet/main.o applet/core.a
+applet/main.elf: applet/main.o applet/core.a 
 	$(LD) $(ALL_LDFLAGS) -o $@ applet/main.o applet/core.a -lc
 
 applet/core.a:	$(OBJ_MODULES)
