@@ -1,0 +1,57 @@
+branch list (valid on May 8th, 2013)
+BaseStation
+	Connects a XBee serial interface to the Receiver, allowing us to use a computer to control the Quadcopter instead of a Futuba style controller. 
+	
+ad_development
+	Our root development tree, this keeps our work separated from the AQ "development" branch. We periodically updated the changes we think are needed from the development branch.
+	
+aq_makefile
+	Adds a makefile and config file to the tree. I hate using the IDE when a quick "make && make upload" will work
+	
+basestation
+	Somebody (not naming names) on our team misnamed his BaseStation branch and continues to push the damn thing to the repo.
+	
+dcm_normalization
+	The DCM code (and the underlying paper) has a couple of problems. One of the terminal problems is that the normalization code tends to lock up if the rotation is too large/fast, stopping the quad from determining it's orientation and making a nice dent in the floor.
+	
+	In this branch we tried to fix that code with a better rotation conserving normalization. The code exists in Python only, but it's there and documented.
+	
+	
+development
+	AeroQuad development branch
+
+flighttest1 (and ad_development)
+	This is our operational flight branch, which is a branch of ad_development
+	
+	1. We swapped out the insanely twitchy acro mode for a "true north" mode. In this mode, the Quad remembers
+	it's starting orientation, and the sticks control tilting along the compass axes. (watch it in action http://www.youtube.com/watch?v=IyPuT_GIE2c )
+	2. We added in scale factor calibration of the magnetoometer to cope with things like metal frames. This was accepted by the AQ project (https://github.com/AeroQuad/AeroQuad/pull/228) but I think has since been removed because the Configurator didn't support it.
+	3. Added the option for the MPU 9150
+	4. Changed the main loop function to a 100Hz timer, so that the timing for the state estimation is regular, not the haphazard "let's hope we're fast enough" in the AQ 3 branch. Not reading sensors pointlessly fast on the ATMega board, and using the sensor averaging where possible to reduce noise. Split the orientation calculation into "measure" and "predict" steps because it doesn't get used at 100Hz, ever.
+	5. Fixed the DCM without re-coding the entire algorithm. This removes the square root approximation, but is porbably slow on anything but and ATMega.
+	6. Removed default OSD defines that consume 5% of the processor. 
+	
+	
+master
+	This is the AQ projects master branch
+	
+pressure_pid_change
+	A failed attempt to fix the pressure PID loop.
+	
+serial_comm_labeling
+	This branch was used to debug a problem with the serial communications. There are a half dozen bugs in the SerialCom depending on which branch/board/define is used. We commented every branch with a single line, and then fixed the bugs that were identified.  These fixes weren't accepted by the AQ project (https://github.com/AeroQuad/AeroQuad/pull/226)
+	
+timing_measurement
+timing_measurement_highlow
+timing_measurement_r1
+timing_measurement_r2
+	The timing measurement branches were all used to narrow down a timing problem in the main loop() function.
+	When everything is running the loop *is not regular*, breaking the 10m/s barrier dozens of times each second.
+	Most of the changesets in these branches are where we remove all code except for the thing we test, time it, 	 and add a comment to the repo.
+	
+xbee_serial_dual
+	This branch adds in the ability to respond over whichever serial channel initiated the link. If you're working in the field, debugging over USB can be a pain. If you're working at home, USB is faster. With this code, the ATMega boards can use both. (https://github.com/AeroQuad/AeroQuad/pull/227)
+
+
+	
+	
